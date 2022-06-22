@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30030de5266b61f4899ddafc2c9b2e19, type: 3}
+  m_Name: Ship
+  m_EditorClassIdentifier: 
+  type: 1
+  name: 
+  unitPrefab: {fileID: 405457846179893507, guid: de54380cb5749d8418124a848e151d1d,
+    type: 3}
+  cost: 25
+  attack: 5
+  health: 15
+  windAngle: 45
+  facingWindSpeed: 2
+  favourWindSpeed: 8
+  nothingWindSpeed: 4
