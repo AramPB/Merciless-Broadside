@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(2)]
 public class UnitRTS : MonoBehaviour
 {
     public GameObject selectedGameObject;
@@ -25,7 +26,15 @@ public class UnitRTS : MonoBehaviour
         }
         //selectedGameObject = transform.Find("Selected").gameObject;
         SetSelectedVisible(false);
-        SelectionManager.unitRTsList.Add(this);
+        if (sm.isEnemy)
+        {
+            SelectionManager.unitRTsEnemyList.Add(this);
+        }
+        else
+        {
+            SelectionManager.unitRTsList.Add(this);
+        }
+
     }
 
     public void SetSelectedVisible(bool visible)
@@ -78,6 +87,18 @@ public class UnitRTS : MonoBehaviour
         if (sm != null)
         {
             sm.MoveShip();
+        }
+        else
+        {
+            Debug.Log(transform.name + " has not ShipMovement");
+        }
+    }
+
+    public void Attack()
+    {
+        if (sm != null)
+        {
+            sm.AttackShip();
         }
         else
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class UnitStats : ScriptableObject
 {
-    //public bool isEnemy;
+    public bool isEnemy;
 
     public enum unitType
     {

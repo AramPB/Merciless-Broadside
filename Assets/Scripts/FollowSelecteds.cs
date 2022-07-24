@@ -30,7 +30,7 @@ public class FollowSelecteds : MonoBehaviour
         {
             focusSelected.transform.position = UpdateFollow();
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown(Constants.LOCK_CAMERA))
         {
             if (locked)
             {

@@ -52,6 +52,8 @@ public class UnitHandler : MonoBehaviour
                 {
                     ship = unit.GetComponent<ShipMovement>();
 
+                    ship.isEnemy = false;
+
                     ship.cost = stats.cost;
                     ship.attack = stats.attack;
                     ship.health = stats.health;
@@ -63,6 +65,8 @@ public class UnitHandler : MonoBehaviour
                 else if(type == GameManager._instance.enemyUnits)
                 {
                     //set enemy stats
+                    ship = unit.GetComponent<ShipMovement>();
+                    ship.isEnemy = true;
                 }
 
                 //set Unit Stats

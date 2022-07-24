@@ -14,7 +14,8 @@ public class UnitRTSSelector : MonoBehaviour
     private Vector2 startPos;
     private Vector2 endPos;
 
-    private bool isDown = false;
+    private bool isDown = false,
+        isCommand = false;
 
     [SerializeField]
     private FollowSelecteds followSelecteds;
@@ -30,8 +31,10 @@ public class UnitRTSSelector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         #region SelectionInputs
-        if (Input.GetMouseButtonDown(0) && !IsMouseOverUIIgnores())
+        //if (Input.GetMouseButtonDown(0) && !IsMouseOverUIIgnores())
+        if (Input.GetButtonDown(Constants.SELECTION) && !IsMouseOverUIIgnores())
         {
             //Left Mouse Button Pressed
 
@@ -42,7 +45,8 @@ public class UnitRTSSelector : MonoBehaviour
             isDown = true;
         }
 
-        if (Input.GetMouseButton(0) && isDown)
+        //if (Input.GetMouseButton(0) && isDown)
+        if (Input.GetButton(Constants.SELECTION) && isDown)
         {
             //Left Mouse Button Held Down
 
@@ -75,14 +79,15 @@ public class UnitRTSSelector : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && isDown)
+        //if (Input.GetMouseButtonUp(0) && isDown)
+        if (Input.GetButtonUp(Constants.SELECTION) && isDown)
         {
             //Left Mouse Button Released
 
             isDown = false;
-
-            DeactivateAllUnits();
-
+            if (!isCommand) {
+                DeactivateAllUnits();
+            }
             CheckSelectedUnits();
 
             startPos = Vector2.zero;
@@ -111,6 +116,31 @@ public class UnitRTSSelector : MonoBehaviour
                 }
             }
             
+        }
+        #endregion
+
+        #region CommandInputs
+        if (Input.GetButtonDown(Constants.COMMAND))
+        {
+            isCommand = true;
+        }
+        if (Input.GetButtonUp(Constants.COMMAND))
+        {
+            isCommand = false;
+        }
+        #endregion
+
+        //TMP?
+        #region AttackButton
+        if (Input.GetButtonDown(Constants.BONUS))
+        {
+            foreach (UnitRTS unit in SelectionManager.unitRTsList)
+            {
+                if (unit.IsSelected())
+                {
+                    unit.Attack();
+                }
+            }
         }
         #endregion
     }

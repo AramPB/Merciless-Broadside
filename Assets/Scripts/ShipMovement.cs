@@ -15,6 +15,8 @@ public class ShipMovement : MonoBehaviour
 
     public float windAngle, windFaced, windNothing, windFavour;
 
+    public bool isEnemy;
+
     private Vector3 windDir;
 
     [SerializeField]
@@ -24,6 +26,11 @@ public class ShipMovement : MonoBehaviour
     void Start()
     {
         agent.speed = windNothing;
+        Debug.Log(transform.name + "//" + MathParabola.MaxDistance(350));
+        var g = MathParabola.GetValues(transform.position, Vector3.zero, 350);
+        MathParabola.GetPosParabola(transform.position, Vector3.zero, 350, 0.1f, g.grade);
+        //MathParabola.GetValues(transform.position, new Vector3(12500f, 0, 0), 350);
+        //MathParabola.GetValues(new Vector3(20,3,0), Vector3.zero, 27.77f);
     }
 
     // Update is called once per frame
@@ -46,15 +53,15 @@ public class ShipMovement : MonoBehaviour
         if (test < windAngle)
         {
             agent.speed = windFavour;
-            Debug.Log($"Favour! {transform.name} -> {windAngle} and {windDir}");
+            //Debug.Log($"Favour! {transform.name} -> {windAngle} and {windDir}");
         }else if (test > 180-windAngle)
         {
-            Debug.Log($"Faced! {transform.name} -> {windAngle} and {windDir}");
+            //Debug.Log($"Faced! {transform.name} -> {windAngle} and {windDir}");
             agent.speed = windFaced;
         }
         else
         {
-            Debug.Log($"Nothing! {transform.name} -> {windAngle} and {windDir}");
+            //Debug.Log($"Nothing! {transform.name} -> {windAngle} and {windDir}");
             agent.speed = windNothing;
         }
 
@@ -72,6 +79,11 @@ public class ShipMovement : MonoBehaviour
             agent.SetDestination(hit.point);
         }
 
+
+    }
+
+    public void AttackShip()
+    {
 
     }
 

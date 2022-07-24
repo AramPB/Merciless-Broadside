@@ -33,6 +33,8 @@ public class CameraController : MonoBehaviour
         mapSizeMaxZ = 500,
         mapLimiterHeigh = 100;
 
+    private bool isAlt = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -67,10 +69,12 @@ public class CameraController : MonoBehaviour
             followTransform = null;
         }
 
-            HandleMouseInput();
-            HandleMovementInput();
+        HandleAlterInput();
+        HandleMouseInput();
+        HandleMovementInput();
         
-        if (Input.GetKeyDown(KeyCode.Escape))
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetButtonDown(Constants.ESCAPE))
         {
             if (isLocked)
             {
@@ -82,14 +86,41 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    void HandleAlterInput()
+    {
+        if (Input.GetButtonDown(Constants.ALTERNATE))
+        {
+            isAlt = true;
+            rotateStartPosition = Input.mousePosition;
+        }
+        if (Input.GetButtonUp(Constants.ALTERNATE))
+        {
+            isAlt = false;
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            float entry;
+
+            if (plane.Raycast(ray, out entry))
+            {
+                dragStartPosition = ray.GetPoint(entry);
+            }
+        }
+    }
+
     void HandleMouseInput()
     {
+
         //ZOOM
-        if(Input.mouseScrollDelta.y != 0 && CanZoom(Input.mouseScrollDelta.y))
+        //if(Input.mouseScrollDelta.y != 0 && CanZoom(Input.mouseScrollDelta.y))
+        if (Input.GetAxis(Constants.ZOOM_INPUT) != 0 && CanZoom(Input.GetAxis(Constants.ZOOM_INPUT)))
         {
-            newZoom += Input.mouseScrollDelta.y * zoomAmount;
+            newZoom += Input.GetAxis(Constants.ZOOM_INPUT) * zoomAmount;
+            //newZoom += Input.mouseScrollDelta.y * zoomAmount;
         }
-        if (Input.GetMouseButtonDown(1))
+        //if (Input.GetMouseButtonDown(1))
+        if(Input.GetButtonDown(Constants.CAMERA_POS) && !isAlt)
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);
 
@@ -103,7 +134,8 @@ public class CameraController : MonoBehaviour
             }
         }
         //MOVEMENT
-        if (Input.GetMouseButton(1) && !isLocked)
+        //if (Input.GetMouseButton(1) && !isLocked)
+        if (Input.GetButton(Constants.CAMERA_POS) && !isLocked && !isAlt)
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);
 
@@ -122,11 +154,13 @@ public class CameraController : MonoBehaviour
             }
         }
         //ROTATE
-        if (Input.GetMouseButtonDown(2))
+        //if (Input.GetMouseButtonDown(2))
+        if (Input.GetButtonDown(Constants.CAMERA_POS) && isAlt)
         {
             rotateStartPosition = Input.mousePosition;
         }
-        if (Input.GetMouseButton(2))
+        //if (Input.GetMouseButton(2))
+        if (Input.GetButton(Constants.CAMERA_POS) && isAlt)
         {
             rotateCurrentPosition = Input.mousePosition;
 
@@ -140,8 +174,9 @@ public class CameraController : MonoBehaviour
 
     void HandleMovementInput()
     {
+        //TMP
         //SPEED
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetButton(Constants.SPEED))
         {
             movementSpeed = fastSpeed;
         }
@@ -171,7 +206,8 @@ public class CameraController : MonoBehaviour
             }
             transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
             */
-            Vector3 auxPos = new Vector3(0, 0, 0);
+            /*
+             Vector3 auxPos = new Vector3(0, 0, 0);
 
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
@@ -193,29 +229,69 @@ public class CameraController : MonoBehaviour
                 newPosition += auxPos;
             }
             transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
+             */
+            Vector3 auxPos = new Vector3(0, 0, 0);
+
+            if (Input.GetButton(Constants.KEY_W))
+            {
+                auxPos += (transform.forward * movementSpeed);
+            }
+            if (Input.GetButton(Constants.KEY_S))
+            {
+                auxPos += (transform.forward * -movementSpeed);
+            }
+            if (Input.GetButton(Constants.KEY_D))
+            {
+                auxPos += (transform.right * movementSpeed);
+            }
+            if (Input.GetButton(Constants.KEY_A))
+            {
+                auxPos += (transform.right * -movementSpeed);
+            }
+            if (CanMove(newPosition + auxPos)) {
+                newPosition += auxPos;
+            }
+            transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
 
         }
         //ROTATION
-        if (Input.GetKey(KeyCode.Q))
+        /*if (Input.GetKey(KeyCode.Q))
         {
             newRotation *= Quaternion.Euler(Vector3.up * rotationAmount);
         }
         if (Input.GetKey(KeyCode.E))
         {
             newRotation *= Quaternion.Euler(Vector3.up * -rotationAmount);
+        }*/
+        if (Input.GetButton(Constants.ROTATE_L))
+        {
+            newRotation *= Quaternion.Euler(Vector3.up * rotationAmount);
+        }
+        if (Input.GetButton(Constants.ROTATE_R))
+        {
+            newRotation *= Quaternion.Euler(Vector3.up * -rotationAmount);
         }
         //ZOOM
-        if (Input.GetKey(KeyCode.R) && CanZoom(1))
+        /*if (Input.GetKey(KeyCode.R) && CanZoom(1))
         {
             newZoom += zoomAmount;
         }
         if (Input.GetKey(KeyCode.F) && CanZoom(-1))
         {
             newZoom -= zoomAmount;
+        }*/
+        if (Input.GetButton(Constants.ZOOM_IN) && CanZoom(1))
+        {
+            newZoom += zoomAmount;
+        }
+        if (Input.GetButton(Constants.ZOOM_OUT) && CanZoom(-1))
+        {
+            newZoom -= zoomAmount;
         }
         transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, Time.deltaTime * movementTime);
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, newZoom, Time.deltaTime * movementTime);
     }
+
 
     private bool CanZoom(float mouse)
     {
