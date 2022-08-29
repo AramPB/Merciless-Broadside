@@ -22,4 +22,7 @@ public static class Constants
     public const string ALTERNATE = "Alternate";
     public const string SPEED = "Speed";
     public const string BONUS = "Bonus";
+
+    public const int SELECTION_CURSOR = 0;
+    public const int ATTACK_CURSOR = 1;
 }

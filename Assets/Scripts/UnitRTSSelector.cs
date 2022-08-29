@@ -15,7 +15,9 @@ public class UnitRTSSelector : MonoBehaviour
     private Vector2 endPos;
 
     private bool isDown = false,
-        isCommand = false;
+        isCommand = false,
+        enemySelected = false,
+        unitsSelected = false;
 
     [SerializeField]
     private FollowSelecteds followSelecteds;
@@ -85,10 +87,18 @@ public class UnitRTSSelector : MonoBehaviour
             //Left Mouse Button Released
 
             isDown = false;
-            if (!isCommand) {
+
+            
+            if (!isCommand && unitsSelected && !CheckIfSelectedEnemy()) {
                 DeactivateAllUnits();
             }
             CheckSelectedUnits();
+
+            if ((!unitsSelected && enemySelected) || CheckIfSelectedEnemy()) {
+                DeactivateAllEnemies();
+            }
+
+            CheckSelectedEnemy();
 
             startPos = Vector2.zero;
             endPos = Vector2.zero;
@@ -104,18 +114,44 @@ public class UnitRTSSelector : MonoBehaviour
             //TODO?: potser un if de que comprovi si clica en area valida o no
             //depenent si es valida mostrar fletxes valides/ i si no invalides
             //tmb es pot detectar si hi ha enemic per atacar
+            bool toAttack = false;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
-            int quantitySelected = SelectionManager.unitRTsList.Count;
-
-            foreach (UnitRTS unit in SelectionManager.unitRTsList)
+            if (Physics.Raycast(ray,out hit))
             {
-                if (unit.IsSelected()) {
-                    //Vector3 margins = unit.GetMargins(); TODO: calcular amb els marges la posicio en formacio de la unitat especifica
-
-                    unit.Move();
+                //Debug.Log(hit.transform.gameObject.name);
+                if (hit.transform.gameObject.GetComponent<ShipMovement>())
+                {
+                    ShipMovement sm = hit.transform.gameObject.GetComponent<ShipMovement>();
+                    if (sm.isEnemy)
+                    {
+                        toAttack = true;
+                        foreach (UnitRTS unit in SelectionManager.unitRTsList)
+                        {
+                            if (unit.IsSelected())
+                            {
+                                unit.Attack(hit.transform.gameObject);
+                            }
+                        }
+                    }
+                    //TODO: else maybe algo de si clica a aliats
                 }
             }
-            
+
+            if (!toAttack) {
+
+                int quantitySelected = SelectionManager.unitRTsList.Count;
+
+                foreach (UnitRTS unit in SelectionManager.unitRTsList)
+                {
+                    if (unit.IsSelected()) {
+                        //Vector3 margins = unit.GetMargins(); TODO: calcular amb els marges la posicio en formacio de la unitat especifica
+
+                        unit.Move();
+                    }
+                }
+            }
         }
         #endregion
 
@@ -131,7 +167,7 @@ public class UnitRTSSelector : MonoBehaviour
         #endregion
 
         //TMP?
-        #region AttackButton
+        /*#region AttackButton
         if (Input.GetButtonDown(Constants.BONUS))
         {
             foreach (UnitRTS unit in SelectionManager.unitRTsList)
@@ -142,7 +178,7 @@ public class UnitRTSSelector : MonoBehaviour
                 }
             }
         }
-        #endregion
+        #endregion*/
     }
     private void DrawRectangle()
     {
@@ -164,14 +200,42 @@ public class UnitRTSSelector : MonoBehaviour
             if (selectionRect.Contains(Camera.main.WorldToScreenPoint(unit.transform.position)))
             {
                 unit.SetSelectedVisible(true);
+                unitsSelected = true;
             }
             if (unit.GetClicked())
             {
                 unit.SetSelectedVisible(true);
                 unit.SetClicked(false);
+                unitsSelected = true;
             }
         }
         followSelecteds.NewSelection();
+    }
+
+    private bool CheckIfSelectedEnemy()
+    {
+        foreach (UnitRTS enemy in SelectionManager.unitRTsEnemyList)
+        {
+            if (enemy.GetClicked())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void CheckSelectedEnemy()
+    {
+        foreach (UnitRTS enemy in SelectionManager.unitRTsEnemyList)
+        {
+            if (enemy.GetClicked())
+            {
+                enemy.SetSelectedVisible(true);
+                enemy.ChangeEnemyColorSelection();
+                enemy.SetClicked(false);
+                enemySelected = true;
+            }
+        }
     }
 
     private void DeactivateAllUnits()
@@ -180,6 +244,16 @@ public class UnitRTSSelector : MonoBehaviour
         {
             unit.SetSelectedVisible(false);
         }
+        unitsSelected = false;
+    }
+
+    private void DeactivateAllEnemies()
+    {
+        foreach (UnitRTS enemy in SelectionManager.unitRTsEnemyList)
+        {
+            enemy.SetSelectedVisible(false);
+        }
+        enemySelected = false;
     }
 
     private bool IsMouseOverUIIgnores()

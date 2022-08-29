@@ -43,6 +43,12 @@ public class UnitRTS : MonoBehaviour
         imSelected = visible;
     }
 
+    //TMP
+    public void ChangeEnemyColorSelection()
+    {
+        selectedGameObject.GetComponent<Renderer>().material.color = Color.red;
+    }
+
     private void OnMouseEnter()
     {
         if (hasRenderer)
@@ -94,11 +100,11 @@ public class UnitRTS : MonoBehaviour
         }
     }
 
-    public void Attack()
+    public void Attack(GameObject target)
     {
         if (sm != null)
         {
-            sm.AttackShip();
+            sm.AttackShip(target);
         }
         else
         {

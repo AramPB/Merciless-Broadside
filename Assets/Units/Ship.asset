@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30030de5266b61f4899ddafc2c9b2e19, type: 3}
   m_Name: Ship
   m_EditorClassIdentifier: 
+  isEnemy: 0
   type: 1
   name: 
   unitPrefab: {fileID: 405457846179893507, guid: de54380cb5749d8418124a848e151d1d,
@@ -20,6 +21,8 @@ MonoBehaviour:
   attack: 5
   health: 15
   windAngle: 45
-  facingWindSpeed: 2
-  favourWindSpeed: 8
-  nothingWindSpeed: 4
+  facingWindSpeed: 5
+  nothingWindSpeed: 10
+  favourWindSpeed: 20
+  cannonPower: 400
+  maxAngleCannon: 2

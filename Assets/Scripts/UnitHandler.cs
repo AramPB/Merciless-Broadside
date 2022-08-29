@@ -17,7 +17,7 @@ public class UnitHandler : MonoBehaviour
         unitHandler = this;
     }
 
-    public (int cost, int attack, int health, float windAngle, float facingWindSpeed, float favourWindSpeed, float nothingWindSpeed) GetUnitStats(string type)//STATS MOD
+    public (int cost, int attack, int health, float windAngle, float facingWindSpeed, float favourWindSpeed, float nothingWindSpeed, float cannonPower, float maxAngle) GetUnitStats(string type)//STATS MOD
     {
         UnitStats stats;
 
@@ -31,9 +31,9 @@ public class UnitHandler : MonoBehaviour
                 break;
             default:
                 Debug.Log($"Unit type: {type} not found");
-                return (0, 0, 0, 0, 0, 0, 0);
+                return (0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
-        return (stats.cost, stats.attack, stats.health, stats.windAngle, stats.facingWindSpeed, stats.favourWindSpeed, stats.nothingWindSpeed); //STATS MOD
+        return (stats.cost, stats.attack, stats.health, stats.windAngle, stats.facingWindSpeed, stats.favourWindSpeed, stats.nothingWindSpeed, stats.cannonPower, stats.maxAngleCannon); //STATS MOD
     }
 
     public void SetUnitStats(Transform type)
@@ -61,6 +61,8 @@ public class UnitHandler : MonoBehaviour
                     ship.windFaced = stats.facingWindSpeed;
                     ship.windFavour = stats.favourWindSpeed;
                     ship.windNothing = stats.nothingWindSpeed;
+                    ship.cannonPower = stats.cannonPower;
+                    ship.maxAngle = stats.maxAngle;
                 }
                 else if(type == GameManager._instance.enemyUnits)
                 {

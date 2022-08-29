@@ -29,6 +29,9 @@ public class UnitStats : ScriptableObject
     public int health;
     public float windAngle;
     public float facingWindSpeed;
-    public float favourWindSpeed;
     public float nothingWindSpeed;
+    public float favourWindSpeed;
+    [Space(15)]
+    public float cannonPower;
+    public float maxAngleCannon;
 }
