@@ -44,7 +44,8 @@ public class BulletBehaviour : MonoBehaviour
         }
         if (transform.position.y < 0)
         {
-            Destroy();
+            //water?
+            //Destroy();
         }
     }
     /*
@@ -70,15 +71,31 @@ public class BulletBehaviour : MonoBehaviour
         grade = g.grade;
 
         move = true;
-        Debug.Log($"{startPos} , {endPos} , {velocity} , {grade} , {startTime}");
+        //Debug.Log($"{startPos} , {endPos} , {velocity} , {grade} , {startTime}");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform)
+        if (other.transform.gameObject.layer == LayerMask.NameToLayer("Unit"))
         {
-
+            UnitRTS unit = other.gameObject.GetComponent<UnitRTS>();
+            if (unit.IsEnemy())
+            {
+                Debug.Log("Hit!");
+                Destroy();
+            }
         }
+        else
+        {
+            if (other.transform.gameObject.layer == LayerMask.NameToLayer("Base"))
+            {
+                Debug.Log("Water");
+                Destroy();
+            }
+        }
+
+        //Friendly fire?
+        //Water
     }
 
     private void Destroy()

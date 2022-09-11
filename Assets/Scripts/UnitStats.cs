@@ -19,6 +19,8 @@ public class UnitStats : ScriptableObject
 
     public new string name;
 
+    public Sprite shipImage;
+
     public GameObject unitPrefab;
 
     [Space(15)]
@@ -31,7 +33,10 @@ public class UnitStats : ScriptableObject
     public float facingWindSpeed;
     public float nothingWindSpeed;
     public float favourWindSpeed;
+    public float rotationSpeed;
     [Space(15)]
     public float cannonPower;
     public float maxAngleCannon;
+    public float fireCannonRate;
+    public float cannonVisionAngle;
 }

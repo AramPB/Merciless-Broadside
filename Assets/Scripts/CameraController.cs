@@ -39,6 +39,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         instance = this;
+        transform.position = GameManager._instance.playerSpawnAera.transform.GetComponent<BoxCollider>().center;
         newPosition = transform.position;
         newRotation = transform.rotation;
         newZoom = cameraTransform.localPosition;

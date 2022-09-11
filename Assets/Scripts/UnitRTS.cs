@@ -41,12 +41,18 @@ public class UnitRTS : MonoBehaviour
     {
         selectedGameObject.SetActive(visible);
         imSelected = visible;
+        sm.SelectionChange(visible);
     }
 
     //TMP
     public void ChangeEnemyColorSelection()
     {
         selectedGameObject.GetComponent<Renderer>().material.color = Color.red;
+    }
+
+    public ShipMovement GetShipMovement()
+    {
+        return sm;
     }
 
     private void OnMouseEnter()
@@ -88,11 +94,24 @@ public class UnitRTS : MonoBehaviour
         return imSelected;
     }
 
-    public void Move()
+    public bool IsEnemy()
     {
         if (sm != null)
         {
-            sm.MoveShip();
+            return sm.isEnemy;
+        }
+        else
+        {
+            Debug.Log(transform.name + " has not ShipMovement");
+            return false;
+        }
+    }
+
+    public void Move(Vector3 hitPoint)
+    {
+        if (sm != null)
+        {
+            sm.MoveShip(hitPoint);
         }
         else
         {

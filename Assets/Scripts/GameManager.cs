@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
         playerUnits,
         enemyUnits;
 
+    public GameObject playerSpawnAera;
+
     [SerializeField]
     private Compass compass;
 
@@ -20,9 +22,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float changeWindDuration;
 
+    public bool inPlacement;
+
     public enum GameState
     {
-        Menu,
+        Placement,
         InGame,
         Victory,
         Lose
@@ -48,7 +52,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         //TMP
-        UpdateGameState(GameState.InGame);
+        UpdateGameState(GameState.Placement);
     }
 
     // Update is called once per frame
@@ -64,8 +68,8 @@ public class GameManager : MonoBehaviour
         //funcions en cada un
         switch (newState)
         {
-            case GameState.Menu:
-                StartMenuGameState();
+            case GameState.Placement:
+                StartPlacementGameState();
                 break;
             case GameState.InGame:
                 StartInGameGameState();
@@ -79,19 +83,40 @@ public class GameManager : MonoBehaviour
         //OnGameStateChanged?.Invoke(newState);
     }
     
-    private void StartMenuGameState()
+    private void StartPlacementGameState()
     {
-
-
+        playerSpawnAera.SetActive(true);
+        inPlacement = true;
+        SelectionManager.unitRTsList.Clear();
+        SelectionManager.unitRTsEnemyList.Clear();
+        UnitHandler.unitHandler.LoadUnits(playerUnits, playerSpawnAera.GetComponent<BoxCollider>().size, playerSpawnAera.GetComponent<BoxCollider>().center);
     }
     private void StartInGameGameState()
     {
-        UnitHandler.unitHandler.SetUnitStats(playerUnits);
-        UnitHandler.unitHandler.SetUnitStats(enemyUnits);
+
+        playerSpawnAera.SetActive(false);
+        inPlacement = false;
+
+        UnitHandler.unitHandler.UpdateStartStats(playerUnits);
+
+        //UnitHandler.unitHandler.SetUnitStats(playerUnits);
+        //UnitHandler.unitHandler.SetUnitStats(enemyUnits);
+
+
     }
 
     public Vector3 GetWind()
     {
         return compass.GetWindDir();
+    }
+
+    public void StartGame()
+    {
+        UpdateGameState(GameState.InGame);
+    }
+
+    public Vector3 GetNewPos()
+    {
+        return UnitHandler.unitHandler.GenerateRandomPosition(playerSpawnAera.GetComponent<BoxCollider>().size, playerSpawnAera.GetComponent<BoxCollider>().center, playerUnits);
     }
 }

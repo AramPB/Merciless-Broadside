@@ -20,4 +20,17 @@ public class SelectionManager : MonoBehaviour
         }
         return false;
     }
+
+    public static int NumberSelecteds()
+    {
+        int i = 0;
+        foreach (UnitRTS unit in unitRTsList)
+        {
+            if (unit.IsSelected())
+            {
+                i++;
+            }
+        }
+        return i;
+    }
 }

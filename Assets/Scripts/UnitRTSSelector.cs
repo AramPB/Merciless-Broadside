@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using CodeMonkey.Utils; //PACKAGE EXTERN!!!!!!
 
 public class UnitRTSSelector : MonoBehaviour
 {
@@ -141,14 +140,39 @@ public class UnitRTSSelector : MonoBehaviour
 
             if (!toAttack) {
 
-                int quantitySelected = SelectionManager.unitRTsList.Count;
-
+                int quantitySelected = SelectionManager.NumberSelecteds();
+                Debug.Log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+                int pos = 0;
+                //Debug.Log("1:  " + quantitySelected);
+                Vector3 newPos = Vector3.zero;
                 foreach (UnitRTS unit in SelectionManager.unitRTsList)
                 {
                     if (unit.IsSelected()) {
+                        Debug.Log("pos:" + pos);
+                        newPos = CalculateNewPos(unit, pos, quantitySelected, hit.point, newPos);
                         //Vector3 margins = unit.GetMargins(); TODO: calcular amb els marges la posicio en formacio de la unitat especifica
 
-                        unit.Move();
+                        if (GameManager._instance.inPlacement)
+                        {
+                            Vector3 size = GameManager._instance.playerSpawnAera.GetComponent<BoxCollider>().size;
+                            Vector3 center = GameManager._instance.playerSpawnAera.GetComponent<BoxCollider>().center;
+                            if (center.x - size.x / 2 < newPos.x
+                                && center.x + size.x / 2 > newPos.x
+                                && center.z - size.z / 2 < newPos.z
+                                && center.z + size.z / 2 > newPos.z)
+                            {
+                                unit.transform.position = new Vector3(newPos.x, 0, newPos.z);
+                            }
+                            else
+                            {
+                                //outBounds
+                            }
+                        }
+                        else
+                        {
+                            unit.Move(newPos);
+                        }
+                        pos++;
                     }
                 }
             }
@@ -179,6 +203,293 @@ public class UnitRTSSelector : MonoBehaviour
             }
         }
         #endregion*/
+    }
+
+
+
+    private Vector3 CalculateNewPos(UnitRTS unit, int pos, int quantity, Vector3 hit, Vector3 ansPos)
+    {
+        float max;
+
+        ShipMovement sm = unit.GetShipMovement();
+        max = Mathf.Max(sm.GetMargins().x, sm.GetMargins().z);
+
+        int quad = Mathf.RoundToInt(Mathf.Sqrt(quantity));
+        int quad2 = quantity / quad;
+        //Debug.Log("atkfhfdjhdj: " + quantity + "/" + Mathf.Sqrt(quantity) + "/" + quad);
+        int others = quantity - quad * quad2;
+        //Debug.Log("POS: " + pos +"/QUAD: " +quad);
+        if (pos < quad * quad2 || (quantity == 1 || quantity == 2 || quantity == 3)) {
+            switch (quantity)
+            {
+                case 1:
+
+                    return hit;
+                case 2:
+                    if (pos == 0)
+                    {
+                        return new Vector3(hit.x - max / 4, 0, hit.z);
+                    }
+                    else
+                    {
+                        if (pos == 1)
+                        {
+                            return new Vector3(hit.x + max / 4, 0, hit.z);
+                        }
+                    }
+                    break;
+                case 3:
+                    if (pos == 0)
+                    {
+                        return new Vector3(hit.x - max / 4, 0, hit.z);
+                    }
+                    else
+                    {
+                        if (pos == 1)
+                        {
+                            return new Vector3(hit.x + max / 4, 0, hit.z);
+                        }
+                        else
+                        {
+                            if (pos == 2)
+                            {
+                                return new Vector3(hit.x, 0, hit.z + max);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    if (quad % 2 == 0)//Par
+                    {
+                        Debug.Log("||||||||||||||||||||||||||||||||||||||||||||");
+                        if (pos == 0)
+                        {
+                            Debug.Log("hitposss (0)" + new Vector3(hit.x - max / 4, 0, hit.z));
+                            return new Vector3(hit.x - max / 4, 0, hit.z);
+                        }
+                        else
+                        {
+                            pos += 1;
+                            int column = pos % quad;
+                            float x;
+                            float z;
+                            bool careEquals = false;
+                            if ((quad / 2) + 1 == quad && column == 0)
+                            {
+                                careEquals = true;
+                            }
+                            Debug.Log("column:" + column + "/" + pos + "/" + quad);
+                            //X pos
+                            if (column != (quad / 2) + 1 && !careEquals) {
+                                if (column != 0) {
+                                    if (column != 1) {
+                                        if (column <= quad / 2)//left
+                                        {
+                                            x = ansPos.x - max / 2;
+                                        }
+                                        else//right
+                                        {
+                                            x = ansPos.x + max / 2;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        x = hit.x - max / 4; //if 1 column L
+                                    }
+                                }
+                                else
+                                {
+                                    x = ansPos.x + max / 2; //if last row
+                                    Debug.Log("Last R");
+                                }
+                            }
+                            else
+                            {
+                                x = hit.x + max / 4; //if 1 column R
+                            }
+                            pos -= 1;
+                            int row = pos / quad;
+                            //Y pos
+                            if (row != 0)
+                            {
+                                if (pos % quad == 0) {
+                                    z = ansPos.z - max;
+                                }
+                                else
+                                {
+                                    z = ansPos.z;
+                                }
+                            }
+                            else
+                            {
+                                z = hit.z;
+                            }
+                            Debug.Log(new Vector3(x, 0, z));
+                            return new Vector3(x, 0, z);
+                        }
+
+                    }
+                    else //Impar
+                    {
+                        Debug.Log("_____________________________________________");
+                        if (pos == 0)
+                        {
+                            Debug.Log(new Vector3(hit.x, 0, hit.z));
+                            return new Vector3(hit.x, 0, hit.z);
+                        }
+                        else
+                        {
+                            pos += 1;
+                            int column = pos % quad;
+                            float x;
+                            float z;
+                            bool careEquals = false;
+                            if (((quad + 1) / 2) + 1 == quad && column == 0)
+                            {
+                                careEquals = true;
+                            }
+                            //X pos
+                            if (column != ((quad + 1) / 2) + 1 && !careEquals)
+                            {
+                                if (column != 0)
+                                {
+                                    if (column != 1)
+                                    {
+                                        if (column <= (quad + 1) / 2)//left
+                                        {
+                                            x = ansPos.x - max / 2;
+                                            Debug.Log("1");
+                                        }
+                                        else//right
+                                        {
+                                            x = ansPos.x + max / 2;
+                                            Debug.Log("2");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        x = hit.x; //if 1 column L
+                                        Debug.Log("3");
+                                    }
+                                }
+                                else
+                                {
+                                    x = ansPos.x + max / 2; //if last row
+                                    Debug.Log("5");
+                                }
+                            }
+                            else
+                            {
+                                x = hit.x + max / 2; //if 1 column R
+                                Debug.Log("4");
+                                
+                            }
+                            pos -= 1;
+                            int row = pos / quad;
+                            //Y pos
+                            if (row != 0)
+                            {
+                                if (pos % quad == 0)
+                                {
+                                    z = ansPos.z - max;
+                                }
+                                else
+                                {
+                                    z = ansPos.z;
+                                }
+                            }
+                            else
+                            {
+                                z = hit.z;
+                            }
+                            Debug.Log(new Vector3(x, 0, z));
+                            return new Vector3(x, 0, z);
+                        }
+                    }
+            }
+        }
+        else//rest
+        {
+            Debug.Log("?????????????????????????????");
+            float x;
+            float z;
+            pos += 1;
+            int relativePos = pos - quad * quad2;
+            if (others%2 == 0)//par
+            {
+                //X pos
+
+                if (relativePos != 1)
+                {
+                    if (relativePos != (others / 2) + 1)
+                    {
+                        if (relativePos <= (others / 2))//left
+                        {
+                            x = ansPos.x - max / 2;
+                        }
+                        else//right
+                        {
+                            x = ansPos.x + max / 2;
+                        }
+                    }
+                    else
+                    {
+                        x = hit.x + max / 4;//if 1 R rest
+                    }
+                }
+                else
+                {
+                    x = hit.x - max / 4;//if 1 rest
+                }
+                //Y pos
+                if (relativePos != 1)
+                {
+                    z = ansPos.z;
+                }
+                else
+                {
+                    z = ansPos.z - max;
+                }
+            }
+            else//impar
+            {
+                //X pos
+                if (relativePos != 1)
+                {
+                    if (relativePos != ((others + 1) / 2) + 1)
+                    {
+                        if (relativePos <= ((others + 1) / 2))//left
+                        {
+                            x = ansPos.x - max / 2;
+                        }
+                        else//right 
+                        {
+                            x = ansPos.x + max / 2;
+                        }
+                    }
+                    else
+                    {
+                        x = hit.x + max / 2;//if 1 R rest
+                    }
+                }
+                else
+                {
+                    x = hit.x;//if 1 rest
+                }
+                //Y pos
+                if (relativePos != 1)
+                {
+                    z = ansPos.z;
+                }
+                else
+                {
+                    z = ansPos.z - max ;
+                }
+            }
+            Debug.Log(new Vector3(x, 0, z));
+            return new Vector3(x, 0, z);
+        }
+        return Vector3.zero;
     }
     private void DrawRectangle()
     {

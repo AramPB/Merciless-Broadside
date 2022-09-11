@@ -13,16 +13,19 @@ MonoBehaviour:
   m_Name: Ship
   m_EditorClassIdentifier: 
   isEnemy: 0
-  type: 1
+  type: 0
   name: 
-  unitPrefab: {fileID: 405457846179893507, guid: de54380cb5749d8418124a848e151d1d,
-    type: 3}
-  cost: 25
-  attack: 5
-  health: 15
-  windAngle: 45
-  facingWindSpeed: 5
-  nothingWindSpeed: 10
-  favourWindSpeed: 20
-  cannonPower: 400
-  maxAngleCannon: 2
+  shipImage: {fileID: 0}
+  unitPrefab: {fileID: 0}
+  cost: 0
+  attack: 0
+  health: 0
+  windAngle: 0
+  facingWindSpeed: 0
+  nothingWindSpeed: 0
+  favourWindSpeed: 0
+  rotationSpeed: 0
+  cannonPower: 0
+  maxAngleCannon: 0
+  fireCannonRate: 0
+  cannonVisionAngle: 0

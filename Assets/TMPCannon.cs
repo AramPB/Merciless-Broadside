@@ -51,4 +51,9 @@ public class TMPCannon : MonoBehaviour
         var g = MathParabola.GetValues(startPos, endPos, velocity,5);
         grade = g.grade;
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("A");
+    }
 }
