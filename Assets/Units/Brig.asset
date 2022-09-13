@@ -25,7 +25,7 @@ MonoBehaviour:
   facingWindSpeed: 8
   nothingWindSpeed: 19
   favourWindSpeed: 30
-  rotationSpeed: 10
+  rotationSpeed: 20
   cannonPower: 400
   maxAngleCannon: 2
   fireCannonRate: 2.5

@@ -14,9 +14,16 @@ public class UnitRTS : MonoBehaviour
     private bool clicked;
     private bool imSelected = false;
     private bool hasRenderer = false;
+    //private bool rangeActive = false;
 
     [SerializeField]
     private GameObject unitPanel;
+
+    //[SerializeField]
+    //private DrawRange drawRange;
+
+    //[SerializeField]
+    //private int vertexNumber = 100;
 
     private UnitUIPanelController unitUIPanel;
 
@@ -44,6 +51,12 @@ public class UnitRTS : MonoBehaviour
                 SetSelectedVisible(unitUIPanel.IsSelected());
             }
         }
+        /*
+        if (rangeActive)
+        {
+
+            drawRange.DrawPolygon(vertexNumber, MathParabola.MaxDistance(sm.cannonPower, sm.maxAngle), new Vector3 (transform.position.x, transform.position.y + 10, transform.position.z), 2, 2);
+        }*/
     }
 
     public void AddUnit()
@@ -216,7 +229,18 @@ public class UnitRTS : MonoBehaviour
     public void SetUnitPanelActive(bool activate)
     {
 
-         unitPanel.SetActive(activate);
-
+        unitPanel.SetActive(activate);
+        /*
+        if (activate)
+        {
+            rangeActive = true;
+            drawRange.lineRenderer.enabled = true;
+        }
+        else
+        {
+            rangeActive = false;
+            drawRange.lineRenderer.enabled = false;
+        }
+        */
     }
 }

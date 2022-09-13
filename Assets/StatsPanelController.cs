@@ -50,13 +50,25 @@ public class StatsPanelController : MonoBehaviour
                 {
                     child.GetComponent<TextMeshProUGUI>().text = cS.cost.ToString();
                 }
-                if (child.name == "Type")
+                if (child.name == "Health")
                 {
-                    child.GetComponent<TextMeshProUGUI>().text = cS.type.ToString();
+                    child.GetComponent<TextMeshProUGUI>().text = "+" + cS.plusShipHealth.ToString();
                 }
                 if (child.name == "Attack")
                 {
-                    child.GetComponent<TextMeshProUGUI>().text = cS.attack.ToString();
+                    child.GetComponent<TextMeshProUGUI>().text = "+" + cS.plusShipAttack.ToString();
+                }
+                if (child.name == "Speed")
+                {
+                    child.GetComponent<TextMeshProUGUI>().text = "+" + cS.plusShipSpeed.ToString();
+                }
+                if (child.name == "FireRate")
+                {
+                    child.GetComponent<TextMeshProUGUI>().text = "-" + cS.plusShipFireRate.ToString();
+                }
+                if (child.name == "CannonPower")
+                {
+                    child.GetComponent<TextMeshProUGUI>().text = "+" + cS.plusShipCannonPower.ToString();
                 }
                 if (child.name == "Image")
                 {
@@ -83,13 +95,37 @@ public class StatsPanelController : MonoBehaviour
                     {
                         child.GetComponent<TextMeshProUGUI>().text = uS.cost.ToString();
                     }
-                    if (child.name == "Type")
+                    if (child.name == "Health")
                     {
-                        child.GetComponent<TextMeshProUGUI>().text = uS.type.ToString();
+                        child.GetComponent<TextMeshProUGUI>().text = uS.health.ToString();
                     }
                     if (child.name == "Attack")
                     {
                         child.GetComponent<TextMeshProUGUI>().text = uS.attack.ToString();
+                    }
+                    if (child.name == "Speed")
+                    {
+                        child.GetComponent<TextMeshProUGUI>().text = uS.facingWindSpeed.ToString() + "//" + uS.nothingWindSpeed.ToString() + "//" + uS.favourWindSpeed.ToString();
+                    }
+                    if (child.name == "FireRate")
+                    {
+                        child.GetComponent<TextMeshProUGUI>().text = uS.fireCannonRate.ToString();
+                    }
+                    if (child.name == "CannonPower")
+                    {
+                        child.GetComponent<TextMeshProUGUI>().text = uS.cannonPower.ToString();
+                    }
+                    if (child.name == "Max Rank 1")
+                    {
+                        child.GetComponent<TextMeshProUGUI>().text = uS.maxCaptains.ToString();
+                    }
+                    if (child.name == "Max Rank 2")
+                    {
+                        child.GetComponent<TextMeshProUGUI>().text = uS.maxOfficers.ToString();
+                    }
+                    if (child.name == "Max Crew")
+                    {
+                        child.GetComponent<TextMeshProUGUI>().text = uS.maxCrewmembers.ToString();
                     }
                     if (child.name == "Image")
                     {

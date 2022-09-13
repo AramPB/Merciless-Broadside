@@ -5671,8 +5671,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 46.561127, y: -39.963}
-  m_SizeDelta: {x: 108.52954, y: 11.959184}
+  m_AnchoredPosition: {x: 21.5, y: -39.963}
+  m_SizeDelta: {x: 58.406754, y: 11.959184}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &819208750
 MonoBehaviour:
@@ -10373,6 +10373,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c839d42a6319b234c841e59626200466, type: 2}
   - {fileID: 11400000, guid: 5c16add205adf9942bdb2b401669ab6a, type: 2}
   numFactions: 2
+  actualFaction: 0
 --- !u!4 &1652097113
 Transform:
   m_ObjectHideFlags: 0
@@ -11345,8 +11346,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 46.561127, y: -39.963}
-  m_SizeDelta: {x: 108.52954, y: 11.959184}
+  m_AnchoredPosition: {x: 21.5, y: -39.963}
+  m_SizeDelta: {x: 58.406754, y: 11.959123}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1756344757
 MonoBehaviour:
@@ -13990,8 +13991,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2038963125}
-  m_LocalRotation: {x: 0.2772408, y: -0.23273107, z: -0.06930328, w: -0.9296079}
-  m_LocalPosition: {x: -103.099174, y: -144.6921, z: -59.50338}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 178.08607, y: -54.461754, z: -180.59978}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 11528481}
@@ -14236,7 +14237,7 @@ MonoBehaviour:
   player: {fileID: 560924360}
   windDir: {x: 0, y: 0, z: 0}
   magnitude: 10
-  changeWindDuration: 8
+  changeWindDuration: 30
 --- !u!114 &2062870153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15707,6 +15708,11 @@ PrefabInstance:
         type: 3}
       propertyPath: maxAngle
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9222129395621396491, guid: e1919851dc6087a418afceb5c0b0fd6a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1919851dc6087a418afceb5c0b0fd6a, type: 3}
