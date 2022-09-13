@@ -6,6 +6,7 @@ using TMPro;
 
 public class ShipPanelController : MonoBehaviour
 {
+    [SerializeField]
     private string nameType;
 
     //private TextMeshProUGUI name;
@@ -24,7 +25,7 @@ public class ShipPanelController : MonoBehaviour
     {
         //name = gameObject.GetComponentInChildren<TextMeshProUGUI>();
 
-        nameType = gameObject.transform.name;
+        //nameType = gameObject.transform.name;
 
         stats = StatsUIManager._instance.GetShipStats(nameType);
 

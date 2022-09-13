@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30030de5266b61f4899ddafc2c9b2e19, type: 3}
-  m_Name: BiggerShip
+  m_Name: Galleon
   m_EditorClassIdentifier: 
   isEnemy: 0
   type: 1
-  name: BiggerShip
-  shipImage: {fileID: 21300000, guid: 667c16abf6528834786ef1ffa50cdab6, type: 3}
+  name: Galleon
+  shipImage: {fileID: 21300000, guid: 6fa5f614695c0a74dad87b47b581ef12, type: 3}
   unitPrefab: {fileID: 334116257450223446, guid: e1919851dc6087a418afceb5c0b0fd6a,
     type: 3}
-  cost: 25
-  attack: 5
-  health: 15
+  cost: 300
+  attack: 50
+  health: 700
   windAngle: 45
   facingWindSpeed: 5
   nothingWindSpeed: 10
@@ -28,5 +28,8 @@ MonoBehaviour:
   rotationSpeed: 10
   cannonPower: 400
   maxAngleCannon: 2
-  fireCannonRate: 2
+  fireCannonRate: 3.5
   cannonVisionAngle: 20
+  maxCaptains: 1
+  maxOfficers: 4
+  maxCrewmembers: 200

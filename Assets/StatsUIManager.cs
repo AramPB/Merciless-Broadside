@@ -6,8 +6,14 @@ public class StatsUIManager : MonoBehaviour
 {
     public static StatsUIManager _instance;
 
-    public List<CrewStats> CharactersList = new List<CrewStats>();
-    public List<UnitStats> ShipsList = new List<UnitStats>();
+    public List<CrewStats> NavyCharactersList = new List<CrewStats>();
+    public List<CrewStats> PirateCharactersList = new List<CrewStats>();
+    public List<UnitStats> NavyShipsList = new List<UnitStats>();
+    public List<UnitStats> PirateShipsList = new List<UnitStats>();
+
+    public int numFactions = 2;
+
+    public int actualFaction = 0;
 
     private void Awake()
     {
@@ -21,13 +27,44 @@ public class StatsUIManager : MonoBehaviour
         }
     }
 
+    public void GetListsStats(int faction, out List<CrewStats> crewStats, out List<UnitStats> shipStats)
+    {
+        switch (faction)
+        {
+            case Constants.NAVY_FACTION:
+                crewStats = NavyCharactersList;
+                shipStats = NavyShipsList;
+                break;
+            case Constants.PIRATE_FACTION:
+                crewStats = PirateCharactersList;
+                shipStats = PirateShipsList;
+                break;
+            default:
+                crewStats = PirateCharactersList;
+                shipStats = PirateShipsList;
+                break;
+        }
+    }
+
     public CrewStats GetCharacterStats(string nameType)
     {
-        foreach (CrewStats character in CharactersList)
-        {
-            if (character.name == nameType)
+        if (actualFaction == Constants.NAVY_FACTION) {
+            foreach (CrewStats character in NavyCharactersList)
             {
-                return character;
+                if (character.name == nameType)
+                {
+                    return character;
+                }
+            }
+        }
+        if (actualFaction == Constants.PIRATE_FACTION)
+        {
+            foreach (CrewStats character in PirateCharactersList)
+            {
+                if (character.name == nameType)
+                {
+                    return character;
+                }
             }
         }
         Debug.Log("Character not exists in CharacterList form StatsUIManager");
@@ -36,11 +73,24 @@ public class StatsUIManager : MonoBehaviour
 
     public UnitStats GetShipStats(string nameType)
     {
-        foreach (UnitStats ship in ShipsList)
+        if (actualFaction == Constants.NAVY_FACTION)
         {
-            if (ship.name == nameType)
+            foreach (UnitStats ship in NavyShipsList)
             {
-                return ship;
+                if (ship.name == nameType)
+                {
+                    return ship;
+                }
+            }
+        }
+        if (actualFaction == Constants.PIRATE_FACTION)
+        {
+            foreach (UnitStats ship in PirateShipsList)
+            {
+                if (ship.name == nameType)
+                {
+                    return ship;
+                }
             }
         }
         Debug.Log("Character not exists in ShipList form StatsUIManager");

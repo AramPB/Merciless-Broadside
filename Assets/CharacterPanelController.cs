@@ -6,10 +6,10 @@ using TMPro;
 
 public class CharacterPanelController : MonoBehaviour
 {
-
+    [SerializeField]
     private string nameType;
     
-    private TextMeshProUGUI name;
+    private TextMeshProUGUI _name;
 
     private CrewStats stats;
 
@@ -36,13 +36,13 @@ public class CharacterPanelController : MonoBehaviour
         {
             if (t.transform.name == "Name")
             {
-                name = t;
+                _name = t;
             }
         }
 
         //name = gameObject.GetComponentInChildren<TextMeshProUGUI>();
 
-        nameType = gameObject.transform.name;
+        //nameType = gameObject.transform.name;
 
         stats = StatsUIManager._instance.GetCharacterStats(nameType);
 
@@ -51,7 +51,7 @@ public class CharacterPanelController : MonoBehaviour
 
         if (stats != null)
         {
-            name.text = stats.name;
+            _name.text = stats.name;
             image.sprite = stats.characterImage;
         }
     }
@@ -72,6 +72,7 @@ public class CharacterPanelController : MonoBehaviour
         if (input.text == null || input.text == "")
         {
             //must add numbers
+            ErrorMessageUIController.ShowText("You must enter a number");
             Debug.Log("peto");
         }
         else
@@ -81,7 +82,7 @@ public class CharacterPanelController : MonoBehaviour
             }
             else
             {
-                //no 0
+                ErrorMessageUIController.ShowText("You can't add 0");
             }
         }
     }

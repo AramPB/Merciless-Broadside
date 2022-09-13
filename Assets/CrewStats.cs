@@ -9,8 +9,8 @@ public class CrewStats : ScriptableObject
     public enum unitType
     {
         Captain,
-        Gunner,
-        Cannoneer
+        Officer,
+        Crew
     };
 
     [Space(15)]
@@ -21,6 +21,8 @@ public class CrewStats : ScriptableObject
 
     public Sprite characterImage;
 
+    public int maxPerShip;
+
     [Space(15)]
     [Header("Unit Base Stats")]
     [Space(40)]
@@ -29,7 +31,11 @@ public class CrewStats : ScriptableObject
     public int health;
 
     [Space(15)]
-    public float cannonPower;
-    public float fireCannonRate;
-
+    //public float cannonPower;
+    //public float fireCannonRate;
+    public int plusShipHealth;
+    public int plusShipAttack;
+    public int plusShipSpeed;
+    public float plusShipFireRate;
+    public int plusShipCannonPower;
 }

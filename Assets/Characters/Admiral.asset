@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   name: Admiral
-  characterImage: {fileID: 21300000, guid: 219389377450d4441bece50e3b160317, type: 3}
-  cost: 100
+  characterImage: {fileID: 21300000, guid: f8173c402e1a98f46ab370c93f391705, type: 3}
+  maxPerShip: 1
+  cost: 250
   attack: 30
   health: 20
-  cannonPower: 2
-  fireCannonRate: 3
+  plusShipHealth: 500
+  plusShipAttack: 5
+  plusShipSpeed: 0
+  plusShipFireRate: 0.3
+  plusShipCannonPower: 50

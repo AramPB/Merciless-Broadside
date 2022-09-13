@@ -15,6 +15,11 @@ public class UnitRTS : MonoBehaviour
     private bool imSelected = false;
     private bool hasRenderer = false;
 
+    [SerializeField]
+    private GameObject unitPanel;
+
+    private UnitUIPanelController unitUIPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +31,23 @@ public class UnitRTS : MonoBehaviour
         }
         //selectedGameObject = transform.Find("Selected").gameObject;
         SetSelectedVisible(false);
+
+
+    }
+
+    private void Update()
+    {
+        if (!IsEnemy())
+        {
+            if (unitUIPanel.hasToChange)
+            {
+                SetSelectedVisible(unitUIPanel.IsSelected());
+            }
+        }
+    }
+
+    public void AddUnit()
+    {
         if (sm.isEnemy)
         {
             SelectionManager.unitRTsEnemyList.Add(this);
@@ -34,13 +56,20 @@ public class UnitRTS : MonoBehaviour
         {
             SelectionManager.unitRTsList.Add(this);
         }
+    }
 
+    public void SetUnitUIPanel(UnitUIPanelController ui)
+    {
+        unitUIPanel = ui;
     }
 
     public void SetSelectedVisible(bool visible)
     {
         selectedGameObject.SetActive(visible);
         imSelected = visible;
+        if (!IsEnemy()) {
+            unitUIPanel.SetSelected(visible);
+        }
         sm.SelectionChange(visible);
     }
 
@@ -131,6 +160,46 @@ public class UnitRTS : MonoBehaviour
         }
     }
 
+    public void GetDamage(int damage)
+    {
+        if (sm != null)
+        {
+            if (!sm.isSink) {
+
+                if (sm.CurrentHealth() - damage <= 0)
+                {
+                    if (sm.isEnemy)
+                    {
+                        SelectionManager.unitRTsEnemyList.RemoveAt(SelectionManager.unitRTsEnemyList.IndexOf(this));
+                    }
+                    else
+                    {
+                        unitUIPanel.SetHealth(0);
+                        unitUIPanel.Die();
+                        unitPanel.SetActive(false);//avoid buggs
+                        SelectionManager.unitRTsList.RemoveAt(SelectionManager.unitRTsList.IndexOf(this));
+                    }
+                }
+                else
+                {
+                    if (!sm.isEnemy) {
+                        unitUIPanel.SetHealth(sm.CurrentHealth() - damage);
+                    }
+                }
+
+                sm.GetDamage(damage);
+            }
+            else
+            {
+                Debug.Log("Already ded");
+            }
+        }
+        else
+        {
+            Debug.Log(transform.name + " has not ShipMovement");
+        }
+    }
+
     public Vector3 GetMargins()
     {
         if (sm != null)
@@ -142,5 +211,12 @@ public class UnitRTS : MonoBehaviour
             Debug.Log(transform.name + " has not ShipMovement");
             return Vector3.zero;
         }
+    }
+
+    public void SetUnitPanelActive(bool activate)
+    {
+
+         unitPanel.SetActive(activate);
+
     }
 }

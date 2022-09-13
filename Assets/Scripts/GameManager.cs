@@ -10,9 +10,14 @@ public class GameManager : MonoBehaviour
 
     public Transform 
         playerUnits,
-        enemyUnits;
+        enemyUnits,
+        playerUI;
+
+    public GameObject playerPanelUI;
 
     public GameObject playerSpawnAera;
+    public GameObject enemySpawnAera;
+    public GameObject mapArea;
 
     [SerializeField]
     private Compass compass;
@@ -24,6 +29,9 @@ public class GameManager : MonoBehaviour
 
     public bool inPlacement;
 
+    //[SerializeField]
+    //private float cannonPower, maxAngle;
+
     public enum GameState
     {
         Placement,
@@ -33,6 +41,9 @@ public class GameManager : MonoBehaviour
     }
 
     public GameState State;
+
+    public PauseMenuController pauseMenu;
+
 
     //public static event Action<GameState> OnGameStateChanged;
 
@@ -58,7 +69,21 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log(MathParabola.MaxDistance(cannonPower, maxAngle));
         //TODO: Aqui hauria de controlar en game quan canviar el vent amb changeWindStartTime changeWindDuration i compass pasarli
+        if (State == GameState.InGame)
+        {
+            if (SelectionManager.unitRTsEnemyList.Count == 0)
+            {
+                pauseMenu.Victory();
+                Debug.Log("WINN!!!");
+            }
+            if (SelectionManager.unitRTsList.Count == 0)
+            {
+                pauseMenu.Defeat();
+                Debug.Log("LOSEE!!!");
+            }
+        }
     }
 
     public void UpdateGameState(GameState newState)
@@ -86,15 +111,19 @@ public class GameManager : MonoBehaviour
     private void StartPlacementGameState()
     {
         playerSpawnAera.SetActive(true);
+        enemySpawnAera.SetActive(true);
         inPlacement = true;
         SelectionManager.unitRTsList.Clear();
         SelectionManager.unitRTsEnemyList.Clear();
-        UnitHandler.unitHandler.LoadUnits(playerUnits, playerSpawnAera.GetComponent<BoxCollider>().size, playerSpawnAera.GetComponent<BoxCollider>().center);
+        UnitHandler.unitHandler.LoadUnits(playerUnits, playerSpawnAera.GetComponent<BoxCollider>().size, playerSpawnAera.GetComponent<BoxCollider>().center, playerUI);
+        UnitHandler.unitHandler.LoadEnemies(enemyUnits, enemySpawnAera.GetComponent<BoxCollider>().size, enemySpawnAera.GetComponent<BoxCollider>().center);
+        UnitHandler.unitHandler.UpdateUnitUI(playerUnits);
     }
     private void StartInGameGameState()
     {
 
         playerSpawnAera.SetActive(false);
+        enemySpawnAera.SetActive(false);
         inPlacement = false;
 
         UnitHandler.unitHandler.UpdateStartStats(playerUnits);
@@ -119,4 +148,9 @@ public class GameManager : MonoBehaviour
     {
         return UnitHandler.unitHandler.GenerateRandomPosition(playerSpawnAera.GetComponent<BoxCollider>().size, playerSpawnAera.GetComponent<BoxCollider>().center, playerUnits);
     }
+
+    //private void OnDrawGizmos()
+    //{
+        //Gizmos.DrawWireSphere(Vector3.zero, MathParabola.MaxDistance(cannonPower, maxAngle));
+    //}
 }

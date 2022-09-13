@@ -114,6 +114,7 @@ public class UnitRTSSelector : MonoBehaviour
             //depenent si es valida mostrar fletxes valides/ i si no invalides
             //tmb es pot detectar si hi ha enemic per atacar
             bool toAttack = false;
+            bool outMap = false;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
@@ -137,18 +138,22 @@ public class UnitRTSSelector : MonoBehaviour
                     //TODO: else maybe algo de si clica a aliats
                 }
             }
+            else
+            {
+                outMap = true;
+            }
 
             if (!toAttack) {
 
                 int quantitySelected = SelectionManager.NumberSelecteds();
-                Debug.Log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+
                 int pos = 0;
                 //Debug.Log("1:  " + quantitySelected);
                 Vector3 newPos = Vector3.zero;
                 foreach (UnitRTS unit in SelectionManager.unitRTsList)
                 {
                     if (unit.IsSelected()) {
-                        Debug.Log("pos:" + pos);
+                        //Debug.Log("pos:" + pos);
                         newPos = CalculateNewPos(unit, pos, quantitySelected, hit.point, newPos);
                         //Vector3 margins = unit.GetMargins(); TODO: calcular amb els marges la posicio en formacio de la unitat especifica
 
@@ -170,7 +175,9 @@ public class UnitRTSSelector : MonoBehaviour
                         }
                         else
                         {
-                            unit.Move(newPos);
+                            if (!outMap) {
+                                unit.Move(newPos);
+                            }
                         }
                         pos++;
                     }
@@ -187,6 +194,28 @@ public class UnitRTSSelector : MonoBehaviour
         if (Input.GetButtonUp(Constants.COMMAND))
         {
             isCommand = false;
+        }
+        if (Input.GetButtonDown(Constants.TAB))
+        {
+            foreach (UnitRTS unit in SelectionManager.unitRTsList)
+            {
+                unit.SetUnitPanelActive(true);
+            }
+            foreach (UnitRTS unit in SelectionManager.unitRTsEnemyList)
+            {
+                unit.SetUnitPanelActive(true);
+            }
+        }
+        if (Input.GetButtonUp(Constants.TAB))
+        {
+            foreach (UnitRTS unit in SelectionManager.unitRTsList)
+            {
+                unit.SetUnitPanelActive(false);
+            }
+            foreach (UnitRTS unit in SelectionManager.unitRTsEnemyList)
+            {
+                unit.SetUnitPanelActive(false);
+            }
         }
         #endregion
 
@@ -261,10 +290,10 @@ public class UnitRTSSelector : MonoBehaviour
                 default:
                     if (quad % 2 == 0)//Par
                     {
-                        Debug.Log("||||||||||||||||||||||||||||||||||||||||||||");
+
                         if (pos == 0)
                         {
-                            Debug.Log("hitposss (0)" + new Vector3(hit.x - max / 4, 0, hit.z));
+                            //Debug.Log("hitposss (0)" + new Vector3(hit.x - max / 4, 0, hit.z));
                             return new Vector3(hit.x - max / 4, 0, hit.z);
                         }
                         else
@@ -278,7 +307,7 @@ public class UnitRTSSelector : MonoBehaviour
                             {
                                 careEquals = true;
                             }
-                            Debug.Log("column:" + column + "/" + pos + "/" + quad);
+                            //Debug.Log("column:" + column + "/" + pos + "/" + quad);
                             //X pos
                             if (column != (quad / 2) + 1 && !careEquals) {
                                 if (column != 0) {
@@ -300,7 +329,6 @@ public class UnitRTSSelector : MonoBehaviour
                                 else
                                 {
                                     x = ansPos.x + max / 2; //if last row
-                                    Debug.Log("Last R");
                                 }
                             }
                             else
@@ -324,17 +352,17 @@ public class UnitRTSSelector : MonoBehaviour
                             {
                                 z = hit.z;
                             }
-                            Debug.Log(new Vector3(x, 0, z));
+                            //Debug.Log(new Vector3(x, 0, z));
                             return new Vector3(x, 0, z);
                         }
 
                     }
                     else //Impar
                     {
-                        Debug.Log("_____________________________________________");
+
                         if (pos == 0)
                         {
-                            Debug.Log(new Vector3(hit.x, 0, hit.z));
+                            //Debug.Log(new Vector3(hit.x, 0, hit.z));
                             return new Vector3(hit.x, 0, hit.z);
                         }
                         else
@@ -358,30 +386,30 @@ public class UnitRTSSelector : MonoBehaviour
                                         if (column <= (quad + 1) / 2)//left
                                         {
                                             x = ansPos.x - max / 2;
-                                            Debug.Log("1");
+
                                         }
                                         else//right
                                         {
                                             x = ansPos.x + max / 2;
-                                            Debug.Log("2");
+
                                         }
                                     }
                                     else
                                     {
                                         x = hit.x; //if 1 column L
-                                        Debug.Log("3");
+
                                     }
                                 }
                                 else
                                 {
                                     x = ansPos.x + max / 2; //if last row
-                                    Debug.Log("5");
+
                                 }
                             }
                             else
                             {
                                 x = hit.x + max / 2; //if 1 column R
-                                Debug.Log("4");
+
                                 
                             }
                             pos -= 1;
@@ -402,7 +430,7 @@ public class UnitRTSSelector : MonoBehaviour
                             {
                                 z = hit.z;
                             }
-                            Debug.Log(new Vector3(x, 0, z));
+                            //Debug.Log(new Vector3(x, 0, z));
                             return new Vector3(x, 0, z);
                         }
                     }
@@ -410,7 +438,7 @@ public class UnitRTSSelector : MonoBehaviour
         }
         else//rest
         {
-            Debug.Log("?????????????????????????????");
+
             float x;
             float z;
             pos += 1;
@@ -486,7 +514,7 @@ public class UnitRTSSelector : MonoBehaviour
                     z = ansPos.z - max ;
                 }
             }
-            Debug.Log(new Vector3(x, 0, z));
+            //Debug.Log(new Vector3(x, 0, z));
             return new Vector3(x, 0, z);
         }
         return Vector3.zero;

@@ -15,8 +15,12 @@ MonoBehaviour:
   type: 0
   name: Captain
   characterImage: {fileID: 21300000, guid: f41215435bcd10949823d7b4c762355d, type: 3}
-  cost: 100
+  maxPerShip: 1
+  cost: 250
   attack: 20
   health: 30
-  cannonPower: 3
-  fireCannonRate: 2
+  plusShipHealth: 200
+  plusShipAttack: 15
+  plusShipSpeed: 5
+  plusShipFireRate: 1
+  plusShipCannonPower: 20

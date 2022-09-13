@@ -11,6 +11,8 @@ public class ShipMovement : MonoBehaviour
 
     public NavMeshAgent agent;
 
+    public string _name;
+
     public int cost, attack, health;
 
     public float windAngle, windFaced, windNothing, windFavour;
@@ -25,7 +27,7 @@ public class ShipMovement : MonoBehaviour
 
     private bool isAttacking, isSelected, isMoving = false, firstLoopMove = false;
 
-    private GameObject target;
+    public GameObject target;
 
     [SerializeField]
     private BoxCollider margins;
@@ -44,6 +46,21 @@ public class ShipMovement : MonoBehaviour
 
     [SerializeField]
     private float distanceOfSlow;
+
+    public bool isTargetInRange = false;
+
+    private int currentHealth;
+
+    public bool isSink = false;
+
+    public bool isDoingNothing = false;
+
+    public bool isDestination = false;
+
+    [SerializeField]
+    private HealthBar healthBar;
+    [SerializeField]
+    private UnitInfoUI unitInfoUI;
 
     // Start is called before the first frame update
     void Start()
@@ -99,9 +116,19 @@ public class ShipMovement : MonoBehaviour
 
     }
 
+    public void UpdateUnitUI()
+    {
+        currentHealth = health;
+        healthBar.SetMaxHealth(health);
+        unitInfoUI.SetName(_name);
+        healthBar.Enemy(isEnemy);
+    }
+
     public void UpdateStartStats()
     {
+        UpdateUnitUI();
         agent.radius = 1;
+
         if (objCannonsR != null)
         {
             foreach (Transform child in objCannonsR.GetComponentInChildren<Transform>())
@@ -127,232 +154,256 @@ public class ShipMovement : MonoBehaviour
     {
         //Debug.Log(agent.isStopped);
 
-        #region TMP
-        if (Input.GetKey("l"))
-        {
-            if (FB != null)
+        if (!isSink) {
+            /*
+            #region TMP
+            if (Input.GetKey("l"))
             {
-                FB.Fire(cannonsRight[0].GetPosition(), new Vector3(2000, 0, 0), cannonPower, maxAngle);
-                //Debug.Log(MathParabola.GetValues(Vector3.zero, new Vector3(80f, 10, 0), 30));
+                if (FB != null)
+                {
+                    FB.Fire(cannonsRight[0].GetPosition(), new Vector3(2000, 0, 0), cannonPower, maxAngle, isEnemy);
+                    //Debug.Log(MathParabola.GetValues(Vector3.zero, new Vector3(80f, 10, 0), 30));
+                }
             }
-        }
-        /*if (Input.GetMouseButtonDown(1) && !IsMouseOverUIIgnores())
-        {
-            Ray rayCam = cam.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit hit;
-
-            if(Physics.Raycast(rayCam, out hit))
+            if (Input.GetMouseButtonDown(1) && !IsMouseOverUIIgnores())
             {
-                //move
-                agent.SetDestination(hit.point);
+                Ray rayCam = cam.ScreenPointToRay(Input.mousePosition);
+
+                RaycastHit hit;
+
+                if(Physics.Raycast(rayCam, out hit))
+                {
+                    //move
+                    agent.SetDestination(hit.point);
+                }
             }
-        }*/
-        #endregion
-
-        #region Visuals
-        if (lrA != null && lrM != null) {
-            if (isSelected && isAttacking)
-            {
-                lrA.enabled = true;
-                lrA.SetPosition(0, new Vector3(transform.position.x, 5, transform.position.z));
-                lrA.SetPosition(1, new Vector3(target.transform.position.x, 5, target.transform.position.z));
-            }
-            else
-            {
-                lrA.enabled = false;
-            }
-            if (isSelected && isMoving)
-            {
-                lrM.enabled = true;
-                lrM.SetPosition(0, new Vector3(transform.position.x, 5, transform.position.z));
-                lrM.SetPosition(1, new Vector3(hitPoint.x, 5, hitPoint.z));
-            }
-            else
-            {
-                lrM.enabled = false;
-            }
-        }
-        #endregion
-
-        #region Wind
-        windDir = GameManager._instance.GetWind();
-        float test = Vector3.Angle(transform.forward, windDir);
-
-        if (test < windAngle)
-        {
-            agent.speed = windFavour;
-            //Debug.Log($"Favour! {transform.name} -> {windAngle} and {windDir}");
-        }else if (test > 180-windAngle)
-        {
-            //Debug.Log($"Faced! {transform.name} -> {windAngle} and {windDir}");
-            agent.speed = windFaced;
-        }
-        else
-        {
-            //Debug.Log($"Nothing! {transform.name} -> {windAngle} and {windDir}");
-            agent.speed = windNothing;
-        }
-        #endregion
-
-        if (isMoving)
-        {
-            //TODO(parcialdone): maybe el moviment es fara codificat rotant quan no estigui close i quan si que faci agent, o potser ja ni cal agent
-            //TODO: arreglar el "nope" que fan al canviar de angle
-            //TODO:Tmb lo de parar amb ancla i acceleracio i el temps de arranque
-            if (Vector3.Distance(transform.position, hitPoint) > agent.stoppingDistance) {
-                Vector3 rotatedAux = Quaternion.Euler(0, -20, 0) * transform.forward;
-                Vector3 rotated2Aux = Quaternion.Euler(0, 20, 0) * transform.forward;
-
-                Vector2 rotated = new Vector2(rotatedAux.x, rotatedAux.z);
-                Vector2 rotated2 = new Vector2(rotated2Aux.x, rotated2Aux.z);
-
-                Vector2 targetDir = new Vector2(hitPoint.x - transform.position.x, hitPoint.z - transform.position.z);
-
-                if (Vector3.Distance(transform.position, hitPoint) > distanceOfSlow) {
-
-                    if (Vector2.Angle(rotated, targetDir) < 20 * 2 && Vector2.Angle(rotated2, targetDir) < 20 * 2)
+            #endregion
+            */
+            #region Visuals
+            if (!isEnemy) {
+                if (lrA != null && lrM != null) {
+                    if (isSelected && isAttacking)
                     {
-                        //agent.isStopped = false;
-                        if (firstLoopMove) {
-                            agent.SetDestination(hitPoint);
-                            agent.angularSpeed = 10;
-                            firstLoopMove = false;
-                        }
-                        Debug.Log("CLOSE");
+                        lrA.enabled = true;
+                        lrA.SetPosition(0, new Vector3(transform.position.x, 5, transform.position.z));
+                        lrA.SetPosition(1, new Vector3(target.transform.position.x, 5, target.transform.position.z));
                     }
                     else
                     {
-                        if (firstLoopMove) {
-                            //agent.isStopped = true;
-                            //agent.angularSpeed = agent.speed * 4;
-                            Vector2 right2D = new Vector2(transform.right.x, transform.right.z);
-                            Vector2 forward2D = new Vector2(transform.forward.x, transform.forward.z);
-                            if ((Vector2.Angle(right2D, targetDir) <= 90 && Vector2.Angle(forward2D, targetDir) <= 90) || (Vector2.Angle(right2D, targetDir) <= 90 && Vector2.Angle(-forward2D, targetDir) <= 90))
-                            {
-                                Debug.Log("R");
-                                transform.Rotate(new Vector3(0, 1, 0) * rotationSpeed * Time.deltaTime);
-                            }
-                            else
-                            {
-                                if ((Vector2.Angle(-right2D, targetDir) < 90 && Vector2.Angle(-forward2D, targetDir) < 90) || (Vector2.Angle(-right2D, targetDir) < 90 && Vector2.Angle(forward2D, targetDir) < 90))
-                                {
-                                    Debug.Log("L");
-                                    transform.Rotate(new Vector3(0, -1, 0) * rotationSpeed * Time.deltaTime);
-                                }
-                            }
-
-                            //transform.position += transform.forward * agent.speed * Time.deltaTime;
-                            agent.angularSpeed = 0;
-                            agent.SetDestination(transform.position + transform.forward * 100);
-                        }
-                        Debug.Log("NOPE");
+                        lrA.enabled = false;
+                    }
+                    if (isSelected && isMoving)
+                    {
+                        lrM.enabled = true;
+                        lrM.SetPosition(0, new Vector3(transform.position.x, 5, transform.position.z));
+                        lrM.SetPosition(1, new Vector3(hitPoint.x, 5, hitPoint.z));
+                    }
+                    else
+                    {
+                        lrM.enabled = false;
                     }
                 }
-                else
-                {
-                    //reallyclose point
-                    if (Vector2.Angle(rotated, targetDir) < 20 * 2 && Vector2.Angle(rotated2, targetDir) < 20 * 2)
-                    {
-                        //face
-                        Debug.Log("a");
-                    }
-                    else
-                    {
-                        if (Vector2.Angle(rotated, targetDir) < 90 && Vector2.Angle(rotated2, targetDir) < 90)
+            }
+            #endregion
+
+            #region Wind
+            windDir = GameManager._instance.GetWind();
+            float test = Vector3.Angle(transform.forward, windDir);
+
+            if (test < windAngle)
+            {
+                agent.speed = windFavour;
+                //Debug.Log($"Favour! {transform.name} -> {windAngle} and {windDir}");
+            } else if (test > 180 - windAngle)
+            {
+                //Debug.Log($"Faced! {transform.name} -> {windAngle} and {windDir}");
+                agent.speed = windFaced;
+            }
+            else
+            {
+                //Debug.Log($"Nothing! {transform.name} -> {windAngle} and {windDir}");
+                agent.speed = windNothing;
+            }
+            #endregion
+
+            #region Movement
+
+            if (isMoving)
+            {
+                //TODO(parcialdone): maybe el moviment es fara codificat rotant quan no estigui close i quan si que faci agent, o potser ja ni cal agent
+                //TODO: arreglar el "nope" que fan al canviar de angle
+                //TODO:Tmb lo de parar amb ancla i acceleracio i el temps de arranque
+                if (Vector3.Distance(transform.position, hitPoint) > agent.stoppingDistance) {
+                    Vector3 rotatedAux = Quaternion.Euler(0, -20, 0) * transform.forward;
+                    Vector3 rotated2Aux = Quaternion.Euler(0, 20, 0) * transform.forward;
+
+                    Vector2 rotated = new Vector2(rotatedAux.x, rotatedAux.z);
+                    Vector2 rotated2 = new Vector2(rotated2Aux.x, rotated2Aux.z);
+
+                    Vector2 targetDir = new Vector2(hitPoint.x - transform.position.x, hitPoint.z - transform.position.z);
+
+                    if (Vector3.Distance(transform.position, hitPoint) > distanceOfSlow) {
+
+                        if (Vector2.Angle(rotated, targetDir) < 20 * 2 && Vector2.Angle(rotated2, targetDir) < 20 * 2)
                         {
-                            agent.speed = windFaced;
-                            Debug.Log("b");
+                            //agent.isStopped = false;
+                            if (firstLoopMove) {
+                                agent.SetDestination(hitPoint);
+                                agent.angularSpeed = 10;
+                                firstLoopMove = false;
+                            }
                         }
                         else
                         {
-                            agent.speed = 1;
-                            Debug.Log("c");
+                            if (firstLoopMove) {
+                                //agent.isStopped = true;
+                                //agent.angularSpeed = agent.speed * 4;
+                                Vector2 right2D = new Vector2(transform.right.x, transform.right.z);
+                                Vector2 forward2D = new Vector2(transform.forward.x, transform.forward.z);
+                                if ((Vector2.Angle(right2D, targetDir) <= 90 && Vector2.Angle(forward2D, targetDir) <= 90) || (Vector2.Angle(right2D, targetDir) <= 90 && Vector2.Angle(-forward2D, targetDir) <= 90))
+                                {
+                                    transform.Rotate(new Vector3(0, 1, 0) * rotationSpeed * Time.deltaTime);
+                                }
+                                else
+                                {
+                                    if ((Vector2.Angle(-right2D, targetDir) < 90 && Vector2.Angle(-forward2D, targetDir) < 90) || (Vector2.Angle(-right2D, targetDir) < 90 && Vector2.Angle(forward2D, targetDir) < 90))
+                                    {
+                                        transform.Rotate(new Vector3(0, -1, 0) * rotationSpeed * Time.deltaTime);
+                                    }
+                                }
+
+                                //transform.position += transform.forward * agent.speed * Time.deltaTime;
+                                agent.angularSpeed = 0;
+                                agent.SetDestination(transform.position + transform.forward * 100);
+                            }
                         }
                     }
-
-                    agent.SetDestination(hitPoint);
-                    agent.angularSpeed = 10;
-                }
-            }
-            else
-            {
-                Debug.Log("Nothing");
-            }
-        }
-
-        if (GameManager._instance.inPlacement)
-        {
-            if (ImOutOfBounds() && !isEnemy)
-            {
-                transform.position = GameManager._instance.GetNewPos();
-            }
-        }
-        //25 graus de cono
-        if (isAttacking)
-        {
-            //agent.SetDestination(target.transform.position);
-
-
-            if (IsInRange())
-            {
-
-                TrianglePositions(true, out Vector3 oneR, out Vector3 otherR);
-                TrianglePositions(false, out Vector3 oneL, out Vector3 otherL);
-
-                if (IsBetween2Vectors(oneR, otherR, cannonVisionAngle)) {
-                    foreach (Cannon cannon in cannonsRight)
+                    else
                     {
-                        if (cannon.IsActive() && cannon.IsLoaded())
+                        //reallyclose point
+                        if (Vector2.Angle(rotated, targetDir) < 20 * 2 && Vector2.Angle(rotated2, targetDir) < 20 * 2)
                         {
-                            cannon.FireCannon();
-                            FB.Fire(cannon.GetPosition(), target.transform.position, cannonPower, maxAngle);
+                            //face
+                            //Debug.Log("a");
                         }
+                        else
+                        {
+                            if (Vector2.Angle(rotated, targetDir) < 90 && Vector2.Angle(rotated2, targetDir) < 90)
+                            {
+                                agent.speed = windFaced;
+                                //Debug.Log("b");
+                            }
+                            else
+                            {
+                                agent.speed = 1;
+                                //Debug.Log("c");
+                            }
+                        }
+
+                        agent.SetDestination(hitPoint);
+                        agent.angularSpeed = 10;
                     }
                 }
                 else
                 {
-                    if (IsBetween2Vectors(oneL, otherL, cannonVisionAngle))
+                    isDestination = true;
+                    Debug.Log("Nothing-Destination?");
+                }
+            }
+
+            if (GameManager._instance.inPlacement)
+            {
+                if (ImOutOfBounds() && !isEnemy)
+                {
+                    transform.position = GameManager._instance.GetNewPos();
+                }
+            }
+            #endregion
+
+            #region Attack
+
+            if (isAttacking)
+            {
+                if (target.transform.GetComponent<ShipMovement>())
+                {
+                    if (target.transform.GetComponent<ShipMovement>().isSink)
                     {
-                        foreach (Cannon cannon in cannonsLeft)
+                        isAttacking = false;
+                    }
+                }
+            }
+            //25 graus de cono
+            if (isAttacking)
+            {
+                //agent.SetDestination(target.transform.position);
+
+
+                if (IsInRange())
+                {
+                    isTargetInRange = true;
+                    TrianglePositions(true, out Vector3 oneR, out Vector3 otherR);
+                    TrianglePositions(false, out Vector3 oneL, out Vector3 otherL);
+
+                    if (IsBetween2Vectors(oneR, otherR, cannonVisionAngle)) {
+                        foreach (Cannon cannon in cannonsRight)
                         {
                             if (cannon.IsActive() && cannon.IsLoaded())
                             {
                                 cannon.FireCannon();
-                                FB.Fire(cannon.GetPosition(), target.transform.position, cannonPower, maxAngle);
+                                FB.Fire(cannon.GetPosition(), target.transform.position, cannonPower, maxAngle, attack, isEnemy);
                             }
                         }
                     }
                     else
                     {
-                        //Rotate
-                        Debug.Log("ROTATE");
-                        Vector2 targetDir = new Vector2(target.transform.position.x - transform.position.x, target.transform.position.z - transform.position.z);
-                        Vector2 right2D = new Vector2(transform.right.x, transform.right.z);
-                        Vector2 forward2D = new Vector2(transform.forward.x, transform.forward.z);
-                        //transform.position += transform.forward * agent.speed*2/3 * Time.deltaTime;
-                        //agent.isStopped = true;
-                        
-                        if ((Vector2.Angle(right2D, targetDir) <= 90 && Vector2.Angle(forward2D, targetDir) <= 90) || (Vector2.Angle(-right2D, targetDir) <= 90 && Vector2.Angle(-forward2D, targetDir) <= 90))
+                        if (IsBetween2Vectors(oneL, otherL, cannonVisionAngle))
                         {
-                            transform.Rotate(new Vector3(0, -1, 0) * rotationSpeed * Time.deltaTime);
-                            //Debug.Log("A" + Vector2.Angle(transform.right, targetDir) + "/" + Vector2.Angle(-transform.right, targetDir));
+                            foreach (Cannon cannon in cannonsLeft)
+                            {
+                                if (cannon.IsActive() && cannon.IsLoaded())
+                                {
+                                    cannon.FireCannon();
+                                    FB.Fire(cannon.GetPosition(), target.transform.position, cannonPower, maxAngle, attack, isEnemy);
+                                }
+                            }
                         }
                         else
                         {
-                            if ((Vector2.Angle(right2D, targetDir) < 90 && Vector2.Angle(-forward2D, targetDir) < 90) || (Vector2.Angle(-right2D, targetDir) < 90 && Vector2.Angle(forward2D, targetDir) < 90))
+                            //Rotate
+                            Vector2 targetDir = new Vector2(target.transform.position.x - transform.position.x, target.transform.position.z - transform.position.z);
+                            Vector2 right2D = new Vector2(transform.right.x, transform.right.z);
+                            Vector2 forward2D = new Vector2(transform.forward.x, transform.forward.z);
+                            //transform.position += transform.forward * agent.speed*2/3 * Time.deltaTime;
+                            //agent.isStopped = true;
+
+                            if ((Vector2.Angle(right2D, targetDir) <= 90 && Vector2.Angle(forward2D, targetDir) <= 90) || (Vector2.Angle(-right2D, targetDir) <= 90 && Vector2.Angle(-forward2D, targetDir) <= 90))
                             {
-                                transform.Rotate(new Vector3(0, 1, 0) * rotationSpeed * Time.deltaTime);
+                                transform.Rotate(new Vector3(0, -1, 0) * rotationSpeed * Time.deltaTime);
+                                //Debug.Log("A" + Vector2.Angle(transform.right, targetDir) + "/" + Vector2.Angle(-transform.right, targetDir));
                             }
+                            else
+                            {
+                                if ((Vector2.Angle(right2D, targetDir) < 90 && Vector2.Angle(-forward2D, targetDir) < 90) || (Vector2.Angle(-right2D, targetDir) < 90 && Vector2.Angle(forward2D, targetDir) < 90))
+                                {
+                                    transform.Rotate(new Vector3(0, 1, 0) * rotationSpeed * Time.deltaTime);
+                                }
+                            }
+                            agent.SetDestination(transform.position + transform.forward * 50);
                         }
-                        agent.SetDestination(transform.position + transform.forward * 50);
                     }
                 }
+                else
+                {
+
+                    //Move closer
+                    agent.SetDestination(target.transform.position);
+                    isTargetInRange = false;
+                }
             }
-            else
+            #endregion
+            if (!isMoving && !isAttacking)
             {
-                //Move closer
-                agent.SetDestination(target.transform.position);
+                isDoingNothing = true;
             }
         }
 
@@ -361,7 +412,7 @@ public class ShipMovement : MonoBehaviour
     public void MoveShip(Vector3 hitPosition)
     {
 
-        agent.isStopped = false;
+        //agent.isStopped = false;
         //Ray rayCam = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         //RaycastHit hit;
@@ -402,6 +453,27 @@ public class ShipMovement : MonoBehaviour
     public Vector3 GetMargins()
     {
         return margins.size;
+    }
+
+    public void GetDamage(int damage)
+    {
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth);
+        if (currentHealth <= 0)
+        {
+            isSink = true;
+            unitInfoUI.ActivateX(true);
+            agent.enabled = false;
+            lrA.enabled = false;
+            lrM.enabled = false;
+            transform.position = new Vector3(transform.position.x, transform.position.y -10, transform.position.z);
+            transform.rotation = transform.rotation * Quaternion.Euler(transform.rotation.x, transform.rotation.y, 20);
+        }
+    }
+
+    public int CurrentHealth()
+    {
+        return currentHealth;
     }
 
     private bool IsInRange()

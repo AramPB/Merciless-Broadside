@@ -9,11 +9,15 @@ public class PauseMenuController : MonoBehaviour
     public static bool gameIsPaused = false;
 
     public GameObject pauseMenuUI;
+    public GameObject victoryMenuUI;
+    public GameObject defeatMenuUI;
+
+    private bool canPause = true;
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown(Constants.EXIT))
+        if (Input.GetButtonDown(Constants.EXIT) && canPause)
         {
             if (gameIsPaused)
             {
@@ -36,9 +40,25 @@ public class PauseMenuController : MonoBehaviour
 
     private void Pause()
     {
-        pauseMenuUI.SetActive(transform);
+        pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         gameIsPaused = true;
+    }
+
+    public void Victory()
+    {
+        victoryMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        gameIsPaused = true;
+        canPause = false;
+    }
+
+    public void Defeat()
+    {
+        defeatMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        gameIsPaused = true;
+        canPause = false;
     }
 
     public void LoadMenu()

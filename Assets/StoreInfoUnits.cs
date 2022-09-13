@@ -6,4 +6,7 @@ public class StoreInfoUnits : MonoBehaviour
 {
     public static List<UnitClass> units = new List<UnitClass>();
 
+    public static int currentGameCost;
+
+    public static int playerFaction;
 }

@@ -33,12 +33,18 @@ public class FleetPanelController : MonoBehaviour
 
     private void OnEnable()
     {
+        ClearInfo();
+    }
+
+    public void ClearInfo()
+    {
         units.Clear();
         foreach (Transform child in listParent.transform)
         {
             Destroy(child.gameObject);
         }
         currentCost = 0;
+        UpdateCost();
     }
 
     private bool CanAddCost(int cost, int quantity = -1)
@@ -53,7 +59,7 @@ public class FleetPanelController : MonoBehaviour
             else
             {
                 currentCost += cost;
-                textCost.text = "COST: " + currentCost + "/" + maxCost;
+                UpdateCost();
                 return true;
             }
         }
@@ -67,7 +73,7 @@ public class FleetPanelController : MonoBehaviour
             else
             {
                 currentCost += cost * quantity;
-                textCost.text = "COST: " + currentCost + "/" + maxCost;
+                UpdateCost();
                 return true;
             }
         }
@@ -78,12 +84,12 @@ public class FleetPanelController : MonoBehaviour
         if (quantity == -1)
         {
             currentCost -= cost;
-            textCost.text = "COST: " + currentCost + "/" + maxCost;
+            UpdateCost();
         }
         else
         {
             currentCost -= cost * quantity;
-            textCost.text = "COST: " + currentCost + "/" + maxCost;
+            UpdateCost();
         }
     }
 
@@ -108,10 +114,12 @@ public class FleetPanelController : MonoBehaviour
             newObject.GetComponent<UnitPanelController>().SetPosition(newPos - 1);
             newObject.GetComponent<UnitPanelController>().SetStats(stats);
             newObject.transform.SetParent(listParent.transform);
+            //UpdateCost();
         }
         else
         {
-            Debug.Log("Cost Over!");
+            ErrorMessageUIController.ShowText("Cost Over!");
+            //Debug.Log("Cost Over!");
         }
     }
 
@@ -187,7 +195,7 @@ public class FleetPanelController : MonoBehaviour
                 units[i].selected = true;
             }
         }
-
+        //afegir crew stats i mostrar
     }
 
     public void UpdateCharactersToShip(bool add, int quantity, CrewStats stats)
@@ -215,8 +223,25 @@ public class FleetPanelController : MonoBehaviour
                 position = i;
             }
         }
+
         if (position != -1 && UIPos != -1)
         {
+            int maxCrew;
+            switch (stats.type)
+            {
+                case CrewStats.unitType.Captain:
+                    maxCrew = units[position].unitStats.maxCaptains;
+                    break;
+                case CrewStats.unitType.Officer:
+                    maxCrew = units[position].unitStats.maxOfficers;
+                    break;
+                case CrewStats.unitType.Crew:
+                    maxCrew = units[position].unitStats.maxCrewmembers;
+                    break;
+                default:
+                    maxCrew = 1;
+                    break;
+            }
 
             int crewPos = -1;
             for (int i = 0; i < units[position].crewMembers.Count; i++)
@@ -227,16 +252,24 @@ public class FleetPanelController : MonoBehaviour
                 }
             }
             if (crewPos != -1) {
+                
                 if (add)
                 {
-                    if (CanAddCost(stats.cost, quantity)) {
-                        units[position].crewMembers[crewPos].quantity += quantity;
+                    if (maxCrew >= quantity + units[position].crewMembers[crewPos].quantity) {
+                        if (CanAddCost(stats.cost, quantity)) {
+                            units[position].crewMembers[crewPos].quantity += quantity;
 
-                        Debug.Log("add" + quantity);
+                            Debug.Log("add" + quantity);
+                        }
+                        else
+                        {
+                            ErrorMessageUIController.ShowText("Cost Over!");
+                            //Debug.Log("Cost Over!");
+                        }
                     }
                     else
                     {
-                        Debug.Log("Cost Over!");
+                        ErrorMessageUIController.ShowText("Exceed max units of this type in this ship!");
                     }
                 }
                 else
@@ -282,39 +315,46 @@ public class FleetPanelController : MonoBehaviour
                 //new crewMembers
                 if (add)
                 {
-                    if (CanAddCost(stats.cost, quantity)) {
-                        CrewClass crewMember = new CrewClass();
-                        crewMember.quantity = quantity;
-                        crewMember.characterStats = stats;
-                        units[position].crewMembers.Add(crewMember);
+                    if (maxCrew >= quantity) {
+                        if (CanAddCost(stats.cost, quantity)) {
+                            CrewClass crewMember = new CrewClass();
+                            crewMember.quantity = quantity;
+                            crewMember.characterStats = stats;
+                            units[position].crewMembers.Add(crewMember);
 
-                        GameObject newObject = Instantiate(crewMemberPanel) as GameObject;
+                            GameObject newObject = Instantiate(crewMemberPanel) as GameObject;
 
-                        int k = 0;
-                        foreach (Transform child in listParent.transform)
-                        {
-                            if (k > UIPos)
+                            int k = 0;
+                            foreach (Transform child in listParent.transform)
                             {
-                                if (child.GetComponent<CrewMemberPanelController>())
+                                if (k > UIPos)
                                 {
-                                    child.GetComponent<CrewMemberPanelController>().SetPosition(child.GetComponent<CrewMemberPanelController>().GetPosition() + 1);
+                                    if (child.GetComponent<CrewMemberPanelController>())
+                                    {
+                                        child.GetComponent<CrewMemberPanelController>().SetPosition(child.GetComponent<CrewMemberPanelController>().GetPosition() + 1);
+                                    }
+                                    if (child.GetComponent<UnitPanelController>())
+                                    {
+                                        child.GetComponent<UnitPanelController>().SetPosition(child.GetComponent<UnitPanelController>().GetPosition() + 1);
+                                    }
                                 }
-                                if (child.GetComponent<UnitPanelController>())
-                                {
-                                    child.GetComponent<UnitPanelController>().SetPosition(child.GetComponent<UnitPanelController>().GetPosition() + 1);
-                                }
+                                k++;
                             }
-                            k++;
+                            newObject.GetComponent<CrewMemberPanelController>().SetPosition(UIPos + 1);
+                            newObject.GetComponent<CrewMemberPanelController>().SetStats(stats);
+                            newObject.GetComponent<CrewMemberPanelController>().EditQuantity(quantity);
+                            newObject.transform.SetParent(listParent.transform);
+                            newObject.transform.SetSiblingIndex(UIPos + 1);
                         }
-                        newObject.GetComponent<CrewMemberPanelController>().SetPosition(UIPos + 1);
-                        newObject.GetComponent<CrewMemberPanelController>().SetStats(stats);
-                        newObject.GetComponent<CrewMemberPanelController>().EditQuantity(quantity);
-                        newObject.transform.SetParent(listParent.transform);
-                        newObject.transform.SetSiblingIndex(UIPos + 1);
+                        else
+                        {
+                            ErrorMessageUIController.ShowText("Cost Over!");
+                            //Debug.Log("Cost Over!");
+                        }
                     }
                     else
                     {
-                        Debug.Log("Cost Over!");
+                        ErrorMessageUIController.ShowText("Exceed max units of this type in this ship!");
                     }
                 }
                 else
@@ -327,6 +367,7 @@ public class FleetPanelController : MonoBehaviour
         }
         else
         {
+            ErrorMessageUIController.ShowText("Select a unit in your fleet to add the crew");
             Debug.Log("NoOneSelected");
             //no selected
         }
@@ -403,7 +444,13 @@ public class FleetPanelController : MonoBehaviour
 
     public void UploadInforToTheGame()
     {
+        StoreInfoUnits.currentGameCost = maxCost;
         StoreInfoUnits.units = units;
+    }
+
+    public void UpdateCost()
+    {
+        textCost.text = "COST: " + currentCost + "/" + maxCost;
     }
 
     public void UpdateMaxCost(int cost)

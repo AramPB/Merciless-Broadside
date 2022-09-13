@@ -82,7 +82,7 @@ public class UnitHandler : MonoBehaviour
         }
     }
 
-    public void LoadUnits(Transform playerUnits, Vector3 sizeArea, Vector3 centerArea)
+    public void LoadUnits(Transform playerUnits, Vector3 sizeArea, Vector3 centerArea, Transform playerUIPanel)
     {
         ShipMovement shipM;
         UnitStats stats;
@@ -122,6 +122,7 @@ public class UnitHandler : MonoBehaviour
 
             shipM.isEnemy = false;
 
+            shipM._name = stats.name;
             shipM.cost = stats.cost;
             shipM.attack = stats.attack;
             shipM.health = stats.health;
@@ -135,14 +136,158 @@ public class UnitHandler : MonoBehaviour
             shipM.rotationSpeed = stats.rotationSpeed;
             shipM.cannonVisionAngle = stats.cannonVisionAngle;
 
+            ship.GetComponent<UnitRTS>().AddUnit();
 
-
-            Debug.Log("U:" + StoreInfoUnits.units[i].unitStats.name);
+            //Debug.Log("U:" + StoreInfoUnits.units[i].unitStats.name);
 
             for (int j = 0; j < StoreInfoUnits.units[i].crewMembers.Count; j++)
             {
                 //Create crew
-                Debug.Log("c->" + StoreInfoUnits.units[i].crewMembers[j].characterStats.name);
+                //Debug.Log("c->" + StoreInfoUnits.units[i].crewMembers[j].characterStats.name);
+                shipM.health += StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipHealth * StoreInfoUnits.units[i].crewMembers[j].quantity;
+                shipM.attack += StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipAttack * StoreInfoUnits.units[i].crewMembers[j].quantity;
+                shipM.windFaced += StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipSpeed * StoreInfoUnits.units[i].crewMembers[j].quantity;
+                shipM.windNothing += StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipSpeed * StoreInfoUnits.units[i].crewMembers[j].quantity;
+                shipM.windFavour += StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipSpeed * StoreInfoUnits.units[i].crewMembers[j].quantity;
+                shipM.fireCannonRate -= StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipFireRate * StoreInfoUnits.units[i].crewMembers[j].quantity;
+                shipM.cannonPower += StoreInfoUnits.units[i].crewMembers[j].characterStats.plusShipCannonPower * StoreInfoUnits.units[i].crewMembers[j].quantity;
+            }
+
+            GameObject shipUI = Instantiate(GameManager._instance.playerPanelUI);
+            shipUI.transform.SetParent(playerUIPanel);
+            shipUI.GetComponent<UnitUIPanelController>().SetStats(shipM, stats.shipImage);
+            shipM.gameObject.GetComponent<UnitRTS>().SetUnitUIPanel(shipUI.GetComponent<UnitUIPanelController>());
+        }
+    }
+
+    private int RandomEnemyFaction(int playerFacion)
+    {
+        int enemyFaction;
+        do
+        {
+            enemyFaction = Random.Range(0, StatsUIManager._instance.numFactions);
+        } while (enemyFaction == playerFacion);
+        return enemyFaction;
+    }
+    public bool ProbabilityCheck(float threshold)
+    {
+        if (threshold == 0)
+            return false;
+        float a = Random.Range(0, 100f);
+        if (a <= threshold)
+            return true;
+        return false;
+    }
+
+    public void LoadEnemies(Transform enemyUnits, Vector3 sizeArea, Vector3 centerArea)
+    {
+        int maxCost = StoreInfoUnits.currentGameCost + (int)(StoreInfoUnits.currentGameCost * 0.1);
+        int faction = StoreInfoUnits.playerFaction;
+        StatsUIManager._instance.GetListsStats(RandomEnemyFaction(faction), out List<CrewStats> crewStats, out List<UnitStats> shipStats);
+
+        int maxIters = shipStats.Count * 4;
+        int totalCost = 0;
+        int iter = 0;
+        Debug.Log("MAX:" + maxCost);
+        while (iter <= maxIters)
+        {
+            int pos = Random.Range(0, shipStats.Count);
+            if (shipStats[pos].cost + totalCost <= maxCost)
+            {
+                iter = 0;
+                totalCost += shipStats[pos].cost;
+                //add ship`+ stats ...
+
+                GameObject ship = Instantiate(shipStats[pos].unitPrefab);
+                ship.AddComponent<EnemyIA>();
+                ship.transform.SetParent(enemyUnits);
+                Debug.Log("Ship->" + shipStats[pos].name);
+                //ship.transform.position = tmpPosition;
+                ship.transform.position = GenerateRandomPosition(sizeArea, centerArea, enemyUnits);
+                ship.transform.rotation = Quaternion.Euler(0, 180, 0);
+                ShipMovement shipM;
+
+                shipM = ship.GetComponent<ShipMovement>();
+
+                shipM.isEnemy = true;
+
+                shipM._name = shipStats[pos].name;
+                shipM.cost = shipStats[pos].cost;
+                shipM.attack = shipStats[pos].attack;
+                shipM.health = shipStats[pos].health;
+                shipM.windAngle = shipStats[pos].windAngle;
+                shipM.windFaced = shipStats[pos].facingWindSpeed;
+                shipM.windFavour = shipStats[pos].favourWindSpeed;
+                shipM.windNothing = shipStats[pos].nothingWindSpeed;
+                shipM.cannonPower = shipStats[pos].cannonPower;
+                shipM.maxAngle = shipStats[pos].maxAngleCannon;
+                shipM.fireCannonRate = shipStats[pos].fireCannonRate;
+                shipM.rotationSpeed = shipStats[pos].rotationSpeed;
+                shipM.cannonVisionAngle = shipStats[pos].cannonVisionAngle;
+
+                ship.GetComponent<UnitRTS>().AddUnit();
+                ship.GetComponent<UnitRTS>().ChangeEnemyColorSelection();
+
+                
+
+                //crew
+                for (int i = 0; i < crewStats.Count; i++)
+                {
+                    int maxCrew;
+                    switch (crewStats[i].type)
+                    {
+                        case CrewStats.unitType.Captain:
+                            maxCrew = shipStats[pos].maxCaptains;
+                            break;
+                        case CrewStats.unitType.Officer:
+                            maxCrew = shipStats[pos].maxOfficers;
+                            break;
+                        case CrewStats.unitType.Crew:
+                            maxCrew = shipStats[pos].maxCrewmembers;
+                            break;
+                        default:
+                            maxCrew = 1;
+                            break;
+                    }
+                    if (ProbabilityCheck(75))
+                    {
+                        int quantity;
+                        int maxIters2 = crewStats[i].maxPerShip * 4;
+                        int iters2 = 0;
+                        do
+                        {
+                            quantity = Random.Range(1, maxCrew + 1);
+                            iters2++;
+                        } while (quantity * crewStats[i].cost + totalCost > maxCost && maxIters2 >= iters2);
+                        if ((maxIters2 >= iters2))
+                        {
+                            totalCost += quantity * crewStats[i].cost;
+                            Debug.Log("Crew->" + crewStats[i].name + "->" + quantity);
+                            //add crew
+                            shipM.health += crewStats[i].plusShipHealth * quantity;
+                            shipM.attack += crewStats[i].plusShipAttack * quantity;
+                            shipM.windFavour += crewStats[i].plusShipSpeed * quantity;
+                            shipM.windNothing += crewStats[i].plusShipSpeed * quantity;
+                            shipM.windFaced += crewStats[i].plusShipSpeed * quantity;
+                            shipM.fireCannonRate -= crewStats[i].plusShipFireRate * quantity;
+                            shipM.cannonPower += crewStats[i].plusShipCannonPower * quantity;
+                        }
+                    }
+                }
+                
+            }
+            iter++;
+        }
+        Debug.Log(totalCost);
+    }
+
+    public void UpdateUnitUI(Transform playerUnits)
+    {
+        foreach (Transform child in playerUnits)
+        {
+            if (child.GetComponent<ShipMovement>())
+            {
+                child.GetComponent<ShipMovement>().UpdateUnitUI();
             }
         }
     }

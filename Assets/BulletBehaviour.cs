@@ -11,6 +11,8 @@ public class BulletBehaviour : MonoBehaviour
     private float startTime = 0;
     private bool start = false;
     private bool move = false;
+    private bool isEnemy = false;
+    private int damage = 0;
 
     private void OnEnable()
     {
@@ -59,7 +61,7 @@ public class BulletBehaviour : MonoBehaviour
         grade = g.grade;
     }
     */
-    public void SetStats(Vector3 start, Vector3 end, float speed, float maxAngle = 45)
+    public void SetStats(Vector3 start, Vector3 end, float speed, bool isEnemy, int damage, float maxAngle = 45)
     {
         startPos = start;
         endPos = end;
@@ -71,6 +73,8 @@ public class BulletBehaviour : MonoBehaviour
         grade = g.grade;
 
         move = true;
+        this.isEnemy = isEnemy;
+        this.damage = damage;
         //Debug.Log($"{startPos} , {endPos} , {velocity} , {grade} , {startTime}");
     }
 
@@ -79,10 +83,20 @@ public class BulletBehaviour : MonoBehaviour
         if (other.transform.gameObject.layer == LayerMask.NameToLayer("Unit"))
         {
             UnitRTS unit = other.gameObject.GetComponent<UnitRTS>();
-            if (unit.IsEnemy())
+            if (unit.IsEnemy() && !isEnemy)
             {
                 Debug.Log("Hit!");
+                unit.GetDamage(damage);
                 Destroy();
+            }
+            else
+            {
+                if (!unit.IsEnemy() && isEnemy)
+                {
+                    Debug.Log("HitAlly!");
+                    unit.GetDamage(damage);
+                    Destroy();
+                }
             }
         }
         else

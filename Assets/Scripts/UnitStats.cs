@@ -39,4 +39,8 @@ public class UnitStats : ScriptableObject
     public float maxAngleCannon;
     public float fireCannonRate;
     public float cannonVisionAngle;
+    [Space(15)]
+    public int maxCaptains;
+    public int maxOfficers;
+    public int maxCrewmembers;
 }

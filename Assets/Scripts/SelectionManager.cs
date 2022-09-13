@@ -33,4 +33,17 @@ public class SelectionManager : MonoBehaviour
         }
         return i;
     }
+
+    public static int NumberSelectedsEnemies()
+    {
+        int i = 0;
+        foreach (UnitRTS unit in unitRTsEnemyList)
+        {
+            if (unit.IsSelected())
+            {
+                i++;
+            }
+        }
+        return i;
+    }
 }

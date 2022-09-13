@@ -10,9 +10,16 @@ public class PreviousGameMenu : MonoBehaviour
     private GameObject pirateShipContent, navyShipContent;
     [SerializeField]
     private GameObject pirateCrewContent, navyCrewContent;
+    [SerializeField]
+    private ScrollRect shipContent, crewContent;
 
     [SerializeField]
     private TMP_Dropdown factionDropdown;
+
+    [SerializeField]
+    private FleetPanelController fleetPanelController;
+
+    private int actualFaction = 0;
 
     private enum Faction
     {
@@ -28,6 +35,8 @@ public class PreviousGameMenu : MonoBehaviour
         factionDropdown.options.Clear();
         factionDropdown.value = 0;
 
+
+
         for (int i = 0; i < System.Enum.GetValues(typeof(Faction)).Length; i++)
         {
             factionDropdown.options.Add(new TMP_Dropdown.OptionData() { text = ((Faction)i).ToString() });
@@ -38,6 +47,7 @@ public class PreviousGameMenu : MonoBehaviour
     {
         ChangeFaction(0);
         factionDropdown.value = 0;
+        actualFaction = 0;
     }
 
     // Update is called once per frame
@@ -48,6 +58,9 @@ public class PreviousGameMenu : MonoBehaviour
 
     public void ChangeFaction(int type)
     {
+        actualFaction = type;
+        StatsUIManager._instance.actualFaction = actualFaction;
+        fleetPanelController.ClearInfo();
         switch ((Faction)type)
         {
             case Faction.Navy:
@@ -55,15 +68,26 @@ public class PreviousGameMenu : MonoBehaviour
                 navyShipContent.SetActive(true);
                 pirateCrewContent.SetActive(false);
                 navyCrewContent.SetActive(true);
+
+                shipContent.content = navyShipContent.GetComponent<RectTransform>();
+                crewContent.content = navyCrewContent.GetComponent<RectTransform>();
                 break;
             case Faction.Pirate:
                 navyShipContent.SetActive(false);
                 pirateShipContent.SetActive(true);
                 navyCrewContent.SetActive(false);
                 pirateCrewContent.SetActive(true);
+
+                shipContent.content = pirateShipContent.GetComponent<RectTransform>();
+                crewContent.content = pirateCrewContent.GetComponent<RectTransform>();
                 break;
             default:
                 break;
         }
+    }
+
+    public void UploadActualFaction()
+    {
+        StoreInfoUnits.playerFaction = actualFaction;
     }
 }

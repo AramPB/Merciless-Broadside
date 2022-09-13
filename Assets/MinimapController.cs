@@ -7,6 +7,7 @@ public class MinimapController : MonoBehaviour
 {
     private int layerMask;
     private Camera cam;
+    private Camera thisCam;
 
     [SerializeField]
     private GameObject water;
@@ -16,7 +17,7 @@ public class MinimapController : MonoBehaviour
     {
         layerMask = LayerMask.GetMask("Base");
         cam = Camera.main;
-
+        thisCam = GetComponent<Camera>();
     }
 
     // Update is called once per frame
@@ -31,6 +32,9 @@ public class MinimapController : MonoBehaviour
             position = hit.point;
         }
         position.y = transform.position.y;
+
+        thisCam.orthographicSize = cam.transform.position.y;
+
         transform.position = position;
 
         transform.rotation = Quaternion.Euler(90f, cam.transform.eulerAngles.y, 0f);

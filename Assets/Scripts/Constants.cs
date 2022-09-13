@@ -23,7 +23,11 @@ public static class Constants
     public const string SPEED = "Speed";
     public const string BONUS = "Bonus";
     public const string EXIT = "Exit";
+    public const string TAB = "Tab";
 
     public const int SELECTION_CURSOR = 0;
     public const int ATTACK_CURSOR = 1;
+
+    public const int NAVY_FACTION = 0;
+    public const int PIRATE_FACTION = 1;
 }

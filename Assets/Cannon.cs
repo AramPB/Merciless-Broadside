@@ -44,7 +44,7 @@ public class Cannon : MonoBehaviour
     {
         isLoaded = false;
         loadStartTime = Time.time;
-        Debug.Log(loadDuration);
+        //Debug.Log(loadDuration);
     }
 
     public bool IsLoaded()

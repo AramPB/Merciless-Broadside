@@ -25,6 +25,12 @@ public class CursorManager : MonoBehaviour
             _instance = this;
         }
     }
+
+    private void Start()
+    {
+        Selection();
+    }
+
     public void Selection()
     {
         cursorHotspot = new Vector2(0, 0);
